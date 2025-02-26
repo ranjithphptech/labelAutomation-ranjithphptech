@@ -244,5 +244,6 @@ def logout():
 def test():
     return "The app is working!"
 
+
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0', port=9000)
