@@ -35,7 +35,7 @@ jobs:
 
           # Clone repository if it doesn't exist
           if [ ! -d "labelAutomationDev" ]; then
-            git clone git@github.com:ranjithphptech/labelAutomation-ranjithphptech.git labelAutomationDev
+            git clone https://github.com/ranjithphptech/labelAutomation-ranjithphptech.git labelAutomationDev
           fi
 
           cd labelAutomationDev
@@ -43,7 +43,7 @@ jobs:
           # Ensure it's correctly linked to the remote repository
           if [ ! -d ".git" ]; then
             git init
-            git remote add origin git@github.com:ranjithphptech/labelAutomation-ranjithphptech.git
+            git remote add origin https://github.com/ranjithphptech/labelAutomation-ranjithphptech.git
           fi
 
           # Reset and pull latest changes
