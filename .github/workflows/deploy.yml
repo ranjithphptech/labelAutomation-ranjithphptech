@@ -34,6 +34,5 @@ jobs:
             pip install -r requirements.txt
           fi
           
-          #sudo systemctl restart flask-app 
-          # Restart your Flask app (adjust as needed)
+          sudo systemctl restart labelautomation-dev.service # Restart your Flask app (adjust as needed)
           EOF
