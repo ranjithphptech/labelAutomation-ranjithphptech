@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Order xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OrderStatus>Released</OrderStatus>
+  <SubStatus />
+  <ArtworkRequired>False</ArtworkRequired>
+  <ArtworkStatus />
+  <Site>ovs.bgpconnect.com</Site>
+  <OrderID>B0608761</OrderID>
+  <OrderLink>https://ovs.bgpconnect.com/Order?orderId=608761</OrderLink>
+  <CustomerID>1754</CustomerID>
+  <CustomerName>S.K.L. EXPORTS</CustomerName>
+  <CustomerEmail>trims@sklexports.com</CustomerEmail>
+  <CreatedDate>10/02/2025 01:21</CreatedDate>
+  <CustomerRef>PO NO :7786</CustomerRef>
+  <RequiredDate>14/02/2025</RequiredDate>
+  <OrderedFromLocationID>india</OrderedFromLocationID>
+  <OrderedFromLocation>Sainmarks Industries India Private Ltd</OrderedFromLocation>
+  <InvoiceLocation>
+    <LocationID>1989</LocationID>
+    <LocationName>S.K.L. EXPORTS</LocationName>
+    <AddressLine1>SF NO : 396/2E, 291/1C, MAHA VISHNU NAGAR</AddressLine1>
+    <AddressLine2>ANGERIPALAYAM ROAD,</AddressLine2>
+    <AddressLine3>TIRUPUR</AddressLine3>
+    <City />
+    <PostCode>641603</PostCode>
+    <isoCountryCode>IN</isoCountryCode>
+  </InvoiceLocation>
+  <DeliveryLocation>
+    <LocationID>1989</LocationID>
+    <LocationName>S.K.L. EXPORTS</LocationName>
+    <AddressLine1>SF NO : 396/2E, 291/1C, MAHA VISHNU NAGAR</AddressLine1>
+    <AddressLine2>ANGERIPALAYAM ROAD,</AddressLine2>
+    <AddressLine3>TIRUPUR</AddressLine3>
+    <City />
+    <PostCode>641603</PostCode>
+    <isoCountryCode>IN</isoCountryCode>
+  </DeliveryLocation>
+  <OrderItems>
+    <OrderItem>
+      <OrderItemID>927074</OrderItemID>
+      <PurchaseOrder>
+        <Reference />
+      </PurchaseOrder>
+      <Asset Id="9987">
+        <Name>SLB1-BLUKIDS</Name>
+        <Description>BLUKIDS SIZE LABEL MONTH &amp; YEAR-SLB1-12X24MM</Description>
+        <Codes>
+          <Code Name="BPC" Value="WOV0014802" />
+        </Codes>
+        <ProductTypes>
+          <ProductType Domain="Retailer">Woven Label</ProductType>
+          <ProductType Domain="Britannia">Woven Label</ProductType>
+        </ProductTypes>
+      </Asset>
+      <Item>
+        <ItemID>7066847</ItemID>
+        <VariantName>BLUKIDS -YEARS CHART-0060</VariantName>
+        <Quantity>250</Quantity>
+        <SizeChartItem Id="11175854" Value="BLUKIDS -YEARS CHART-0060" SizeChartName="6153-6150-6154-6156-BLUKIDS -YEARS CHART">
+          <Size Name="YEARS" Value="4-5" />
+          <Size Name="CM" Value="110" />
+        </SizeChartItem>
+        <Variables>
+          <Variable Section="Var" AnswerType="Lookup List" LookupListType="Variable" QuestionID="11175855" Question="Country">
+            <Answer>
+              <AnswerID>28125</AnswerID>
+              <AnswerValues>
+                <AnswerValue Name="Name">UPIM</AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations />
+            </Answer>
+          </Variable>
+          <Variable Section="Var" AnswerType="Text" QuestionID="11175856" Question="Supplier Style">
+            <Answer>
+              <AnswerID />
+              <AnswerValues>
+                <AnswerValue Name="">252TSH067-6155</AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations>
+                <Translation Language="En" Value="252TSH067-6155" />
+              </AnswerTranslations>
+            </Answer>
+          </Variable>
+        </Variables>
+      </Item>
+      <Item>
+        <ItemID>7066848</ItemID>
+        <VariantName>BLUKIDS -YEARS CHART-0090</VariantName>
+        <Quantity>250</Quantity>
+        <SizeChartItem Id="11175854" Value="BLUKIDS -YEARS CHART-0090" SizeChartName="6153-6150-6154-6156-BLUKIDS -YEARS CHART">
+          <Size Name="YEARS" Value="7-8" />
+          <Size Name="CM" Value="128" />
+        </SizeChartItem>
+        <Variables>
+          <Variable Section="Var" AnswerType="Lookup List" LookupListType="Variable" QuestionID="11175855" Question="Country">
+            <Answer>
+              <AnswerID>28125</AnswerID>
+              <AnswerValues>
+                <AnswerValue Name="Name">UPIM</AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations />
+            </Answer>
+          </Variable>
+          <Variable Section="Var" AnswerType="Text" QuestionID="11175856" Question="Supplier Style">
+            <Answer>
+              <AnswerID />
+              <AnswerValues>
+                <AnswerValue Name="">252TSH067-6155</AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations>
+                <Translation Language="En" Value="252TSH067-6155" />
+              </AnswerTranslations>
+            </Answer>
+          </Variable>
+        </Variables>
+      </Item>
+      <Item>
+        <ItemID>7066849</ItemID>
+        <VariantName>BLUKIDS -YEARS CHART-0110</VariantName>
+        <Quantity>250</Quantity>
+        <SizeChartItem Id="11175854" Value="BLUKIDS -YEARS CHART-0110" SizeChartName="6153-6150-6154-6156-BLUKIDS -YEARS CHART">
+          <Size Name="YEARS" Value="9-10" />
+          <Size Name="CM" Value="140" />
+        </SizeChartItem>
+        <Variables>
+          <Variable Section="Var" AnswerType="Lookup List" LookupListType="Variable" QuestionID="11175855" Question="Country">
+            <Answer>
+              <AnswerID>28125</AnswerID>
+              <AnswerValues>
+                <AnswerValue Name="Name">UPIM</AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations />
+            </Answer>
+          </Variable>
+          <Variable Section="Var" AnswerType="Text" QuestionID="11175856" Question="Supplier Style">
+            <Answer>
+              <AnswerID />
+              <AnswerValues>
+                <AnswerValue Name="">252TSH067-6155</AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations>
+                <Translation Language="En" Value="252TSH067-6155" />
+              </AnswerTranslations>
+            </Answer>
+          </Variable>
+        </Variables>
+      </Item>
+    </OrderItem>
+  </OrderItems>
+</Order>

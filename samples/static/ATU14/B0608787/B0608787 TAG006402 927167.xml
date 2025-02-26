@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Order xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OrderStatus>Released</OrderStatus>
+  <SubStatus />
+  <ArtworkRequired>True</ArtworkRequired>
+  <ArtworkStatus>Approved</ArtworkStatus>
+  <Site>ovs.bgpconnect.com</Site>
+  <OrderID>B0608787</OrderID>
+  <OrderLink>https://ovs.bgpconnect.com/Order?orderId=608787</OrderLink>
+  <CustomerID>1758</CustomerID>
+  <CustomerName>S.M FASHION WEAR</CustomerName>
+  <CustomerEmail>ruban@smfashionwear.com</CustomerEmail>
+  <CreatedDate>10/02/2025 02:54</CreatedDate>
+  <CustomerRef>252TSH095-6140 ADD TAG</CustomerRef>
+  <RequiredDate>15/02/2025</RequiredDate>
+  <OrderedFromLocationID>india</OrderedFromLocationID>
+  <OrderedFromLocation>Sainmarks Industries India Private Ltd</OrderedFromLocation>
+  <InvoiceLocation>
+    <LocationID>1993</LocationID>
+    <LocationName>S.M FASHION WEAR</LocationName>
+    <AddressLine1>S.F.NO.608/2B 1B,SIVASAKTHI NAGAR II CROSS,</AddressLine1>
+    <AddressLine2>NEAR SEVANTHAMPALAYAM,MUTHNAMPALAYAM(PO),</AddressLine2>
+    <AddressLine3>TIRUPUR</AddressLine3>
+    <City />
+    <PostCode>641608</PostCode>
+    <isoCountryCode>IN</isoCountryCode>
+  </InvoiceLocation>
+  <DeliveryLocation>
+    <LocationID>1993</LocationID>
+    <LocationName>S.M FASHION WEAR</LocationName>
+    <AddressLine1>S.F.NO.608/2B 1B,SIVASAKTHI NAGAR II CROSS,</AddressLine1>
+    <AddressLine2>NEAR SEVANTHAMPALAYAM,MUTHNAMPALAYAM(PO),</AddressLine2>
+    <AddressLine3>TIRUPUR</AddressLine3>
+    <City />
+    <PostCode>641608</PostCode>
+    <isoCountryCode>IN</isoCountryCode>
+  </DeliveryLocation>
+  <OrderItems>
+    <OrderItem>
+      <OrderItemID>927167</OrderItemID>
+      <PurchaseOrder>
+        <Reference />
+      </PurchaseOrder>
+      <Asset Id="10766">
+        <Name>ATU14</Name>
+        <Description>OEKO-TEX-ATU14-45X45MM</Description>
+        <Codes>
+          <Code Name="BPC" Value="TAG006402" />
+        </Codes>
+        <ProductTypes>
+          <ProductType Domain="Retailer">Additional Tag</ProductType>
+          <ProductType Domain="Britannia">Graphic Swing Ticket</ProductType>
+        </ProductTypes>
+      </Asset>
+      <Item>
+        <ItemID>7067004</ItemID>
+        <Quantity>2620</Quantity>
+        <SizeChartItem Id="0" />
+        <Variables>
+          <Variable Section="Var" AnswerType="Lookup List" LookupListType="Variable" QuestionID="11176165" Question="Country">
+            <Answer>
+              <AnswerID>28125</AnswerID>
+              <AnswerValues>
+                <AnswerValue Name="Name">UPIM</AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations />
+            </Answer>
+          </Variable>
+          <Variable Section="Var" AnswerType="Text" QuestionID="11176166" Question="Supplier Style">
+            <Answer>
+              <AnswerID />
+              <AnswerValues>
+                <AnswerValue Name="">252TSH095-6140</AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations>
+                <Translation Language="En" Value="252TSH095-6140" />
+              </AnswerTranslations>
+            </Answer>
+          </Variable>
+        </Variables>
+      </Item>
+    </OrderItem>
+  </OrderItems>
+</Order>

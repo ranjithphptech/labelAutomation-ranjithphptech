@@ -1,0 +1,6 @@
+env/
+__pycache__/
+tag_fonts/
+.vscode/
+*.pyc
+*.pyo
