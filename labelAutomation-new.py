@@ -65,7 +65,6 @@ def genProcess(processName='',zipFile=''):
                 dbcursor.execute("SELECT * FROM label_list WHERE label_name = '"+assetName+".svg' ")
                 labelDet = dbcursor.fetchone()
                 
-                
                 if labelDet:
                     orderID = XMLtree.find('OrderID').text
                     customerID = XMLtree.find('CustomerID').text
