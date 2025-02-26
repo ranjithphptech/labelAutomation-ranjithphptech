@@ -18,31 +18,35 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} | tee -a ~/.ssh/known_hosts
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
 
       - name: Deploy to EC2
         run: |
           ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          set -e  # Stop script execution on error
+          
           cd /home/ubuntu
 
-          # Ensure the project directory exists
+          # Clone repository if it doesn't exist
           if [ ! -d "labelAutomationDev" ]; then
             git clone git@github.com:ranjithphptech/labelAutomation-ranjithphptech.git labelAutomationDev
           fi
 
           cd labelAutomationDev
 
-          # Ensure the folder is a git repo and pull latest changes
+          # Ensure it's correctly linked to the remote repository
           if [ ! -d ".git" ]; then
             git init
             git remote add origin git@github.com:ranjithphptech/labelAutomation-ranjithphptech.git
-            git fetch origin
-            git checkout -b main --track origin/main
-          else
-            git pull origin main
           fi
 
-          # Check if virtual environment exists, if not create it
+          # Reset and pull latest changes
+          git reset --hard
+          git pull origin main
+
+          # Ensure virtual environment exists
           if [ ! -d "env" ]; then
             python3 -m venv env
           fi
@@ -53,5 +57,6 @@ jobs:
           pip install -r requirements.txt
           
           # Restart the application
+          sudo systemctl daemon-reload
           sudo systemctl restart labelautomation-dev.service
           EOF
