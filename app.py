@@ -1,5 +1,4 @@
 import os
-# import labelAutomation
 from flask import Flask, session, render_template, request, redirect, url_for, flash,jsonify
 from flask_mysqldb import MySQL
 from math import ceil   
@@ -33,11 +32,6 @@ os.makedirs(NEW_ORDERS, exist_ok=True)
 # Function to check if the uploaded file is a .zip file
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'zip'
-
-# @app.route("/labelAutomationProcess")
-# def automationProcess():
-#     labelAutomation.genProcess('send_for_customer_approval')
-#     return 'done'
 
 @app.route("/")
 def home():
@@ -103,6 +97,22 @@ def Taglist():
     offset = (page - 1) * per_page
     cursor.execute("SELECT * FROM label_list LIMIT %s OFFSET %s", (per_page, offset))
     labels = cursor.fetchall()
+    
+    # Modify the result as needed
+    for label in labels:
+        frontLabel = label['label_name'].replace('.svg', '_FRONT.svg')
+        frontLabelPath = os.path.join(STATIC_FOLDER, frontLabel)
+        if not os.path.exists(frontLabelPath):
+            frontLabel = ''
+
+        backLabel = label['label_name'].replace('.svg', '_BACK.svg')
+        backLabelPath = os.path.join(STATIC_FOLDER, backLabel)
+        if not os.path.exists(backLabelPath):
+            backLabel = ''
+        
+        label['frontLabel'] = frontLabel
+        label['backLabel'] = backLabel
+    
     cursor.close()
     
     return render_template("tag-list.html", labels=labels, total_pages=total_pages, current_page=page)
@@ -133,8 +143,8 @@ def saveSvg():
     if request.method == 'POST':
         # Define the directory to save SVG files
         svgDir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static', 'svg'))
-        dynamic = 0         
-       
+        dynamic = request.form.get('dynamic_label', 0)
+        
         # Handle the uploaded SVG files
         if request.files['svgFile']:
             svgFile = request.files['svgFile']

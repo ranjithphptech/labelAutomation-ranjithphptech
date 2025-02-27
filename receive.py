@@ -1,6 +1,6 @@
-import pika, sys, os
+import pika
 import json
-import labelAutomation
+import labelAutomationNew
 
 def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost',heartbeat=1800))
@@ -11,7 +11,7 @@ def main():
     def callback(ch, method, properties, body):
         j = json.loads(body)
         print("order received for processing "+j['order'])
-        labelAutomation.genProcess(processName='customer_order_approval',zipFile=j['order'])
+        labelAutomationNew.genProcess(processName='customer_order_approval',zipFile=j['order'])
         print(' [*] Waiting for order. To exit press CTRL+C')
                 
     channel.basic_consume(queue='LabelAutomation', on_message_callback=callback, auto_ack=True)

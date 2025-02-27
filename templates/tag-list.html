@@ -176,11 +176,13 @@
                 </td> <!-- Accessing the dynamic column and conditionally display "Dynamic" or "Static" -->
                 <td>
                   <!-- Displaying the SVG Thumbnail -->
-                  <img src="{{ url_for('static', filename='svg/' + label['label_name']).replace('.svg','_FRONT.svg') }}" alt="Front side"
+                  <img src="{{ url_for('static', filename='svg/' + label['frontLabel']) }}" alt="Front side"
                     style="max-width: 100px; height: 100px; object-fit: contain;">
                     {% if label['dynamic']|int == 1 %}
-                    <img src="{{ url_for('static', filename='svg/' + label['label_name']).replace('.svg','_BACK.svg') }}" alt="Back side"
-                    style="max-width: 100px; height: 100px; object-fit: contain;">
+                      {% if label['backLabel'] %}
+                      <img src="{{ url_for('static', filename='svg/' + label['backLabel'])}}" alt="Back side"
+                      style="max-width: 100px; height: 100px; object-fit: contain;">
+                      {% endif %}
                     {% endif %}
                 </td>
               </tr>

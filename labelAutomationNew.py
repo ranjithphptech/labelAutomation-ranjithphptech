@@ -16,7 +16,7 @@ from PIL import Image
 from fpdf import FPDF
 current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)
-mandatoryIds = []
+mandatoryIds=[]
 def genProcess(processName='',zipFile=''):
     baseNameOfZip = zipFile
     zipFile = zipFile+'.zip'
@@ -25,7 +25,7 @@ def genProcess(processName='',zipFile=''):
     orderProcessing = config['paths']['orderProcessing']
     orderOutputDir = config['paths']['orderOutputDir']
     svgDir = os.path.join('static',config['paths']['svgDir'])
-    # customerApprovalPending = config['paths']['customerApprovalPending']
+    customerApprovalPending = config['paths']['customerApprovalPending']
     failedOrders = config['paths']['failedOrders']
     currentZipFileName = baseNameOfZip
     currentZipOutputDir = ""
@@ -78,6 +78,7 @@ def genProcess(processName='',zipFile=''):
                     'customerEmail':customerEmail,
                     'createdDate':createdDate,
                     }
+                    submitted_date = str(datetime.now().strftime("%d/%m/%Y"))
                 else:
                     raise Exception('TAG not found , check tag list')
                 
@@ -85,25 +86,35 @@ def genProcess(processName='',zipFile=''):
                 selected_category = ""
                 
                 frontAssetName = assetName+"_FRONT"
-                frontsvgString=svgDir+'/'+frontAssetName+'.svg'
-                namespaces = {node[0]: node[1] for _, node in ET.iterparse(frontsvgString, events=['start-ns'])}
-                for key, value in namespaces.items():
-                    ET.register_namespace(key, value)
-                frontSVGtree = ET.parse(frontsvgString)
-                frontSvgRoot = frontSVGtree.getroot()  
-                frontSvgName = '1.svg'
-                frontSvgFilePath = currentZipOutputDir+'/'+xmlFileBasename+'/'+frontSvgName
-                
+                frontsvgString = os.path.join(svgDir, frontAssetName + '.svg')
+                if os.path.exists(frontsvgString) :
+                    frontSideExists = True
+                    namespaces = {node[0]: node[1] for _, node in ET.iterparse(frontsvgString, events=['start-ns'])}
+                    for key, value in namespaces.items():
+                        ET.register_namespace(key, value)
+                    frontSVGtree = ET.parse(frontsvgString)
+                    frontSvgRoot = frontSVGtree.getroot()  
+                    frontSvgName = '1.svg'
+                    frontSvgFilePath = currentZipOutputDir+'/'+xmlFileBasename+'/'+frontSvgName
+                else:
+                    frontSideExists = False
+                    
                 tagGroups = {}
                 tagSno = 1
-                
-                if labelDet['dynamic']==1:                    
-                    backAssetName = assetName+"_BACK"
-                    backsvgString=svgDir+'/'+backAssetName+'.svg'
-                    backSvgtree = ET.parse(backsvgString)
-                    backSvgRoot = backSvgtree.getroot()  
+                if labelDet['dynamic']==1:   
+                    currentAssetName = assetName+"_BACK"
+                    currentsvgString = os.path.join(svgDir, currentAssetName + '.svg')
+                    if os.path.exists(currentsvgString):
+                        currentsvgString = svgDir + '/' + currentAssetName + '.svg'
+                    else:
+                        currentAssetName = assetName+"_FRONT"
+                        currentsvgString = svgDir + '/' + currentAssetName + '.svg'
                     
-                    selling_price_position_style = get_selling_price_position(backSvgRoot)
+                
+                    currentSvgtree = ET.parse(currentsvgString)
+                    currentSvgRoot = currentSvgtree.getroot()
+                    
+                    selling_price_position_style = get_selling_price_position(currentSvgRoot)
                     
                     currency_india_style = selling_price_position_style.get('currency_india', {}).get('style', None)                 
                     currency_style = selling_price_position_style.get('currency', {}).get('style', None)
@@ -111,14 +122,14 @@ def genProcess(processName='',zipFile=''):
                     selling_price_fraction_style = selling_price_position_style.get('selling_price_fraction', {}).get('style', None)
                     selling_price_fraction_y_position = selling_price_position_style.get('selling_price_fraction', {}).get('y_position', None)
                     selling_price_style = selling_price_position_style.get('selling_price', {}).get('style', None)
-                    size_positions = get_size_position(backSvgRoot)
+                    size_positions = get_size_position(currentSvgRoot)
                     variable_size_text_style = size_positions.get('variable_size_text', {}).get('style', None)
                     variable_size_box_style = size_positions.get('variable_size_box', {}).get('style', None)
-                  
-                    namespaces = {node[0]: node[1] for _, node in ET.iterparse(backsvgString, events=['start-ns'])}
+                    
+                    namespaces = {node[0]: node[1] for _, node in ET.iterparse(currentsvgString, events=['start-ns'])}
                     for key, value in namespaces.items():
                         ET.register_namespace(key, value)
-                   
+                    
                     supplierStype,country,color = '','',''
                     all_sizes=[] 
                     name_attributes=['ITA','ANNI-YEARS','MESI-MONTHS','YEARS','MONTHS','IT'] 
@@ -143,7 +154,7 @@ def genProcess(processName='',zipFile=''):
                     season_code =""
                     for item in items:
                         mandatoryIds = ['quantity']
-                        SVGtree = ET.parse(backsvgString)
+                        SVGtree = ET.parse(currentsvgString)
                         SVGroot = SVGtree.getroot()
                         itemID = item.find('./ItemID').text
                         qty = item.find('./Quantity').text  
@@ -187,7 +198,7 @@ def genProcess(processName='',zipFile=''):
                             
                             if variable.attrib['Question']=='Season Code':
                                 season_code = variable.find("./Answer/AnswerValues/AnswerValue").text
-                           
+                            
                             if variable.attrib['Question']=='Currency':
                                 currency = variable.findall("./Answer/AnswerValues/AnswerValue")
                                 
@@ -287,7 +298,7 @@ def genProcess(processName='',zipFile=''):
                             set_category(SVGroot,selected_name_attr)
                         
                         tagGroups.setdefault(country, {}).setdefault(color, {}).setdefault(supplierStype, {}).setdefault('tagList',[]).append(outPutSvgName)
-                       
+                        
                         set_barcode(labelDet['barcode_x_position'],labelDet['barcode_y_position'],labelDet['barcode_width'],data,SVGroot)
                         size_order= sort_dynamic_list(all_sizes)
                         size_append(SVGroot,size_order,selected_size,variable_size_text_style,variable_size_box_style)
@@ -301,9 +312,16 @@ def genProcess(processName='',zipFile=''):
                         #svg file generation end of xml file end
                         tagSno +=1
                     
-                    if season_code!="":
-                        set_svg_text(frontSvgRoot,"season_code","("+str(season_code)+")")
-                    frontSVGtree.write(frontSvgFilePath)
+                    latexSvgFilesCode = ""
+                    if frontSideExists:
+                        if season_code!="":
+                            set_svg_text(frontSvgRoot,"season_code","("+str(season_code)+")")
+                        frontSVGtree.write(frontSvgFilePath)
+
+                        frontSvgBaseName = os.path.splitext(frontSvgName)[0]
+                        width, height = get_svg_dimensions(frontSvgFilePath)
+                        latexSvgFilesCode =f'\\includesvg[inkscapearea=page, width={width:.2f}mm, height={height:.2f}mm]{{{frontSvgBaseName}}} \n' 
+                                
                     font_families = extract_font_families_from_style(currentSvgFilePath)
                     print (f"font Familes : {font_families}")
                     width, height = get_svg_dimensions(currentSvgFilePath)
@@ -313,7 +331,7 @@ def genProcess(processName='',zipFile=''):
                     Path(currentZipOutputDir+'/pdf').mkdir(parents=True, exist_ok=True)
                     if isPDFOutputDir==False:
                         Path(currentZipOutputDir+'/pdf').mkdir(parents=True, exist_ok=True)
-                
+
                     title = supplierStype+" - "+country+" - "+color+" - "+orderID
                     buyerTxt         = '               OVS'
                     submittedDateTxt = createdDate
@@ -326,8 +344,6 @@ def genProcess(processName='',zipFile=''):
                     graphicspath = currentZipOutputDir+'/'+xmlFileBasename
                     latexFonts = ""
                     
-                   
-                    
                     svg_dir = Path(currentZipOutputDir) / xmlFileBasename
                     pdfPageBody =""
                     # Iterate over tagGroups to create pages
@@ -338,7 +354,8 @@ def genProcess(processName='',zipFile=''):
                                 title = supplierStyle+" - "+country+" - "+color+" - "+orderID
                                 print("title --- --  "+title)
                                 pdfPageBody += r'''\begin{table}
-                        \begin{tabularx}{1\textwidth}{|*{7}{Y|}}
+                                \centering
+                        \begin{tabularx}{0.5\textwidth}{|*{7}{Y|}}
                         \hline 
                             \multirow{2}{=}{ \begin{center} \includegraphics[height=1.6cm,width=3.9cm]{Sainmarknewlogo} \end{center} } 
                             &\multicolumn{3}{|p{10cm}|}{BUYER : '''+buyerTxt+r'''}  &\multirow{2}{=}{  \begin{center} ARTWORK\\ FOR\\ APPROVAL \end{center}} \\
@@ -349,7 +366,7 @@ def genProcess(processName='',zipFile=''):
                         \cline{2-4}
                             &\multicolumn{3}{l|}{PRODUCT CODE : '''+product_code+r'''} &\\
                         \cline{2-4}
-                            &\multicolumn{3}{l|}{SUBMITTED DATE : '''+submittedDateTxt+r'''} &\\
+                            &\multicolumn{3}{l|}{SUBMITTED DATE : '''+submitted_date+r'''} &\\
                         \cline{2-4}
                             &\multicolumn{3}{l|}{} &\\
                         \hline
@@ -360,10 +377,7 @@ def genProcess(processName='',zipFile=''):
                         \end{center}
                         \hfill\break
                         \centering '''
-                                front_svg_path = Path(currentZipOutputDir) / xmlFileBasename / frontSvgName
-                                frontSvgBaseName = os.path.splitext(frontSvgName)[0]
-                                width, height = get_svg_dimensions(front_svg_path)
-                                latexSvgFilesCode =f'\\includesvg[inkscapearea=page, width={width:.2f}mm, height={height:.2f}mm]{{{frontSvgBaseName}}} \n'   
+                                    
                                 for tag in tagList:
                                     svg_path = Path(currentZipOutputDir) / xmlFileBasename / tag
                                     baseNameSVG = os.path.splitext(tag)[0]
@@ -371,8 +385,7 @@ def genProcess(processName='',zipFile=''):
                                     print(title+"-"+baseNameSVG)
                                     latexSvgFilesCode +=f'\\includesvg[inkscapearea=page, width={width:.2f}mm, height={height:.2f}mm]{{{baseNameSVG}}} \n'   
                                 pdfPageBody += latexSvgFilesCode+"\n\\newpage"
-                    # print(pdfPageBody)
-                    # exit()
+                    
                     with open(latexFilePath,'w') as clatexFile:
                         clatexFile.write(r'''\documentclass{article}
                         \usepackage{multirow,tabularx}
@@ -380,8 +393,8 @@ def genProcess(processName='',zipFile=''):
                         \usepackage[export]{adjustbox}
                         \usepackage{xcolor}
                         \usepackage[inkscapelatex=false]{svg}
-                        \usepackage[a3paper,landscape,left=5mm,right=5mm,bottom=5mm]{geometry}
-                        %\usepackage[b2paper,landscape,left=5mm,right=5mm,bottom=5mm]{geometry}
+                        %\usepackage[a3paper,landscape,left=5mm,right=5mm,bottom=5mm]{geometry}
+                        \usepackage[b2paper,landscape,left=5mm,right=5mm,bottom=5mm]{geometry}
                         \setlength{\voffset}{-0.75in}
                         \setlength{\headsep}{5pt}
                         \usepackage{layout}
@@ -392,7 +405,7 @@ def genProcess(processName='',zipFile=''):
                         %\IfFontExistsTF{Arial-Bold}{\newfontfamily\Arial{Arial}}{\textbf{Warning: Font Arial not found.}}
                         '''+latexFonts+r'''
                         \begin{document}
-                           '''+pdfPageBody+r'''
+                            '''+pdfPageBody+r'''
                         \end{document} ''')
                     
                     # for svg in sorted(os.listdir(svg_dir)):
@@ -447,8 +460,10 @@ def genProcess(processName='',zipFile=''):
                     #     '''+latexSvgFiles+r'''
                     #     \end{document} ''')
                         
-                    #dynamic tag latex creation end        
-                
+                    # * dynamic tag latex creation end        
+
+ 
+               
                 else:
                     print('static label')
                     supplierStype,country,color = '','',''
@@ -510,7 +525,7 @@ def genProcess(processName='',zipFile=''):
                        %\usepackage[a3paper,left=5mm,right=5mm,bottom=5mm]{geometry}
                         \usepackage[b2paper,landscape,left=5mm,right=5mm,bottom=5mm,top=5mm]{geometry}
                         \setlength{\voffset}{-0.75in}
-                        \setlength{\headsep}{5pt}
+                        \setlength{\headsep}{80pt}
                         \usepackage{layout}
                         \usepackage{fontspec}
                         \newcolumntype{Y}{>{\centering\arraybackslash}X}
@@ -519,7 +534,8 @@ def genProcess(processName='',zipFile=''):
                         '''+latexFonts+r'''
                         \begin{document}
                         \begin{table}
-                        \begin{tabularx}{1\textwidth}{|*{7}{Y|}}
+                        \centering
+                        \begin{tabularx}{0.5\textwidth}{|*{7}{Y|}}
                         \hline 
                             \multirow{2}{=}{ \begin{center} \includegraphics[height=1.7cm,width=3.9cm]{Sainmarknewlogo} \end{center} } 
                             &\multicolumn{3}{|p{10cm}|}{BUYER : '''+buyerTxt+r'''}  &\multirow{2}{=}{  \begin{center} ARTWORK\\ FOR\\ APPROVAL \end{center}} \\
@@ -530,7 +546,7 @@ def genProcess(processName='',zipFile=''):
                         \cline{2-4}
                             &\multicolumn{3}{l|}{PRODUCT CODE : '''+product_code+r'''} &\\
                         \cline{2-4}
-                            &\multicolumn{3}{l|}{SUBMITTED DATE : '''+submittedDateTxt+r'''} &\\
+                            &\multicolumn{3}{l|}{SUBMITTED DATE : '''+submitted_date+r'''} &\\
                         \cline{2-4}
                             &\multicolumn{3}{l|}{} &\\
                         \hline
@@ -544,27 +560,30 @@ def genProcess(processName='',zipFile=''):
                         '''+latexSvgFiles+r'''
                         \end{document} ''')
                                   
-                    #static tag latex creation end
-                    
+                    # *static tag latex creation end
+                
                 latexFilePathStr = current_dir+"/"+str(latexFilePath)
                 outputDirStr = current_dir+"/"+str(Path(currentZipOutputDir) / "pdf")   
                 
+                #! To run the xelatex command in terminal
                 # print(f'xelatex --shell-escape --enable-write18 --output-directory="{outputDirStr}" "{latexFilePathStr}"')
                 # exit()
                 x = os.system(f'xelatex --shell-escape --enable-write18 --output-directory="{outputDirStr}" "{latexFilePathStr}"')
                 reduce_pdf_quality(f'{outputDirStr}/{pdfFileName}.pdf',f'{outputDirStr}/{pdfFileName}_compressed.pdf')
+                #! to remove the original pdf file
                 # os.remove(f'{outputDirStr}/{pdfFileName}.pdf')
-           
-            for x in ordersData:
-                submitted_date = datetime.strptime(ordersData.get(x).get('createdDate'),'%d/%m/%Y %H:%M').date()
-                toemail = ordersData.get(x).get('customerEmail')
+            # print('mail')
+            # exit()
+            if ordersData:
+                order_id = list(ordersData.keys())[0]
+                toemail = ordersData[order_id].get('customerEmail')
                 approval_mail_status = 'P'
+                submitted_date = str(datetime.now().strftime("%Y-%m-%d"))
                 dbcursor = conn.cursor()
-                dbcursor.execute("INSERT INTO orders(order_id, buyer, customer_id,customer_name, customer_email_id,approval_mail_status, design_codes, submitted_date,status, created_date_time) VALUES('"+x+"', 'OVS','"+ordersData.get(x).get('customerID')+"', '"+ordersData.get(x).get('customerName')+"', '"+ordersData.get(x).get('customerEmail')+"','"+approval_mail_status+"', '"+(",".join(designCodes))+"', '"+str(submitted_date)+"', 'CAP', '"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"');")
+                dbcursor.execute("INSERT INTO orders(order_id, buyer, customer_id,customer_name, customer_email_id,approval_mail_status, design_codes, submitted_date,status, created_date_time) VALUES('"+order_id+"', 'OVS','"+ordersData[order_id].get('customerID')+"', '"+ordersData[order_id].get('customerName')+"', '"+ordersData[order_id].get('customerEmail')+"','"+approval_mail_status+"', '"+(",".join(designCodes))+"', '"+submitted_date+"', 'CAP', '"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"');")
+                order_ins_id = dbcursor.lastrowid
                 conn.commit()
                     
-            print('mail triggered')
-            exit()
             res = send_mail(subject='Subject',toMailid=toemail,attachmentPath=currentZipOutputDir+'/pdf')
             if res['status']=='success':
                 approval_mail_status = 'S'
@@ -575,6 +594,9 @@ def genProcess(processName='',zipFile=''):
                 dbcursor = conn.cursor()
                 dbcursor.execute("INSERT INTO failed_orders(order_id,error,status,created_date_time) VALUES('"+currentZipFileName+"','"+res['msg']+"','F','"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"')")
                 conn.commit()
+
+            dbcursor.execute("UPDATE orders SET approval_mail_status = %s WHERE id = %s", (approval_mail_status, order_ins_id))
+            conn.commit()
             
             delete_folder_and_files(currentZipOutputDir)
             delete_folder_contents_only('svg-inkscape')
@@ -582,11 +604,11 @@ def genProcess(processName='',zipFile=''):
     except Exception as error:
         print('Error')
         print(error)       
-        # shutil.move(orderProcessing+'/'+baseNameOfZip+'.zip', failedOrders+'/'+baseNameOfZip+'.zip')  
-        # delete_folder_and_files(currentZipOutputDir)
-        # dbcursor = conn.cursor()
-        # dbcursor.execute("INSERT INTO failed_orders(order_id,error,status,created_date_time) VALUES('"+currentZipFileName+"','"+str(format(error)).replace("'",'"').strip()+"','F','"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"')")
-        # conn.commit()
+        shutil.move(orderProcessing+'/'+baseNameOfZip+'.zip', failedOrders+'/'+baseNameOfZip+'.zip')  
+        delete_folder_and_files(currentZipOutputDir)
+        dbcursor = conn.cursor()
+        dbcursor.execute("INSERT INTO failed_orders(order_id,error,status,created_date_time) VALUES('"+currentZipFileName+"','"+str(format(error)).replace("'",'"').strip()+"','F','"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"')")
+        conn.commit()
 
 def reduce_pdf_quality(input_pdf, output_pdf, dpi=100, quality=90):
     images = convert_from_path(input_pdf, dpi=dpi)  # Convert to images
@@ -1030,5 +1052,4 @@ def set_apperal_category(root,  selected_id):
     else:
         print(f"No text element found with ID '{selected_id}'.")
 
- 
-genProcess('customer_order_approval','B0559934')
+# genProcess('customer_order_approval','B0608787')
