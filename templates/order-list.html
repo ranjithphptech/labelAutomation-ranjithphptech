@@ -1,209 +1,117 @@
-<!doctype html>
-<html lang="en">
+{%extends 'base.html'%} {%block content%}
+<div class="page-contents">
+  <h1 class="text-center">Order List</h1>
+  <div class="mt-5">
+    {% if orders %}
+    <table class="table table-sm table-bordered table-striped data-table">
+      <thead>
+        <tr>
+          <th>Britannia Code</th>
+          <th>Tag Name</th>
+          <th>Customer</th>
+          <th>Status</th>
+          <th>Failed message</th>
+          <th>Date/Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>{{ order['order_id'] }}</td>
+          <td>{{ order['tag_list'] }}</td>
+          <td>{{ order['customer_name'] }}</td>
+          <td>{{ order['status'] }}</td>
+          <td>{{ order['error'] }}</td>
+          <td>{{ order['created_date_time'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BGP connect</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-    rel="stylesheet">
-  <style>
-    body {
-      background-color: #f5f5f5;
-      font-family: "Poppins", sans-serif;
-      font-weight: 400;
-      font-style: normal;
-    }
-
-    .data-box {
-      position: relative;
-      height: 100vh;
-      margin: 25px;
-      border-radius: 10px;
-      background-color: #ffffff;
-      padding: 2rem;
-      box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    }
-
-    .custom-page-nav {
-      text-align: center;
-      margin: 20px;
-    }
-
-    .custom-page-nav a {
-      background-image: linear-gradient(to right, #1FA2FF 0%, #12D8FA 51%, #1FA2FF 100%);
-      text-decoration: none;
-      font-size: 14px;
-      margin: 5px;
-      padding: 10px 25px;
-      text-align: center;
-      text-transform: uppercase;
-      transition: 0.5s;
-      background-size: 200% auto;
-      color: white;
-      box-shadow: 0 0 20px #eee;
-      border-radius: 5px;
-    }
-
-    .custom-page-nav a:hover {
-      background-position: right center;
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .custom-page-nav a.active {
-      /* background-image: linear-gradient(to right, #FF512F 0%, #DD2476  51%, #FF512F  100%); */
-      background-image: linear-gradient(to right, #FFB75E 0%, #ED8F03 51%, #FFB75E 100%)
-    }
-
-    .page-contents,
-    .modal-dialog {
-      font-family: "Poppins", sans-serif;
-      font-size: 1rem;
-    }
-
-    .page-contents button {
-      font-size: 0.9rem;
-    }
-
-    .modal-dialog h5 {
-      font-size: 1rem;
-    }
-
-    input,
-    textarea,
-    .btn-close,
-    .btn:focus,
-    .btn:active {
-      box-shadow: none !important;
-      outline: 0px !important;
-    }
-
-    .page-contents .btn-primary {
-      background-image: linear-gradient(to right, #1FA2FF 0%, #12D8FA 100%);
-      border: none;
-      color: white;
-    }
-
-    .page-contents .btn-primary:hover {
-      background-image: linear-gradient(to right, #12D8FA 0%, #1FA2FF 100%);
-      opacity: 0.9;
-    }
-
-    .logout-link {
-      position: absolute;
-      right: 15px;
-      top: 15px;
-      font-size: 0.8rem;
-    }
-
-    .logout-link a {
-      color: #1FA2FF;
-      text-decoration: none;
-    }
-
-    .logout-link a:hover {
-      color: #f71919;
-    }
-
-    .page-contents{
-      font-family: "Poppins", sans-serif;
-      font-size: 0.9rem;
-    }
-    .page-contents h1 {
-      font-size: 1.4rem;
-    }
-
-    .page-contents .data-table {
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-
-<body>
-
-
-
-  <div class="container">
-    <div class="data-box">
-      <div class="menu-box">
-        <div class="logout-link"><a href="logout">Logout</a></div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="custom-page-nav">
-              <a href="OrderUpload">Order Uploader</a>
-              <a class="active" href="Orderlist">Order List</a>
-              <a href="TagUpload">Tag Uploader</a>
-              <a href="Taglist">Tag List</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr />
-
-
-      <div class="page-contents">
-        <h1 class="text-center">Order List</h1>
-
-
-        <div class="mt-5">
-
-          {% if labels %}
-          <table class="table table-sm table-bordered table-striped data-table">
-            <thead>
-              <tr>
-                <th>Britannia Code</th>
-                <th>Tag_name</th>
-                <th>customer_name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for users in labels %}
-              <tr>
-                <td>{{ users['order_id'] }}</td> <!-- Accessing the ID column by key -->
-                <td>{{ users['bo_code'] }}</td>
-                <td>{{ users['customer_name'] }}</td> <!-- Accessing the label name column by key -->
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-
-          
-          
-
-          <div class="d-flex justify-content-end">
-            <nav aria-label="...">
-              <ul class="pagination">
-                <li class="page-item">
-                  <span title="Previous" class="page-link">&laquo;</span>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item active" aria-current="page">
-                  <span class="page-link">2</span>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a title="Next" class="page-link" href="#">&raquo;</a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          
-          {% else %}
-          <p>No labels found in the database.</p>
+    <div class="d-flex justify-content-end">
+      <nav>
+        <ul class="pagination justify-content-center">
+          <!-- Previous Button -->
+          {% if page > 1 %}
+          <li class="page-item">
+            <a class="page-link" href="{{ url_for('Orderlist', page=page-1) }}"
+              >Previous</a
+            >
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="{{ url_for('Orderlist', page=1) }}"
+              >First</a
+            >
+          </li>
           {% endif %}
-        </div>
-      </div>
-      <!-- Optional: Add Bootstrap JS and dependencies -->
-      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
 
-</html>
+          <!-- Page Numbers -->
+          {% if total_pages <= 7 %} {% for num in range(1, total_pages + 1) %}
+          <li class="page-item {% if num == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('Orderlist', page=num) }}"
+              >{{ num }}</a
+            >
+          </li>
+          {% endfor %} {% else %}
+          <!-- Show first three pages -->
+          {% for num in range(1, 4) %}
+          <li class="page-item {% if num == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('Orderlist', page=num) }}"
+              >{{ num }}</a
+            >
+          </li>
+          {% endfor %}
+
+          <!-- Show dots if necessary -->
+          {% if page > 5 %}
+          <li class="page-item disabled"><a class="page-link">...</a></li>
+          {% endif %}
+
+          <!-- Show middle page if not too close to edges -->
+          {% if page > 3 and page < total_pages - 2 %}
+          <li class="page-item active">
+            <a class="page-link" href="{{ url_for('Orderlist', page=page) }}"
+              >{{ page }}</a
+            >
+          </li>
+          {% endif %}
+
+          <!-- Show dots if necessary -->
+          {% if page < total_pages - 4 %}
+          <li class="page-item disabled"><a class="page-link">...</a></li>
+          {% endif %}
+
+          <!-- Show last three pages -->
+          {% for num in range(total_pages - 2, total_pages + 1) %}
+          <li class="page-item {% if num == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('Orderlist', page=num) }}"
+              >{{ num }}</a
+            >
+          </li>
+          {% endfor %} {% endif %}
+
+          <!-- Next Button -->
+          {% if page < total_pages %}
+          <li class="page-item">
+            <a class="page-link" href="{{ url_for('Orderlist', page=page+1) }}"
+              >Next</a
+            >
+          </li>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="{{ url_for('Orderlist', page=total_pages) }}"
+              >Last</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+
+    {% else %}
+    <p>No labels found in the database.</p>
+    {% endif %}
+  </div>
+</div>
+{%endblock%}

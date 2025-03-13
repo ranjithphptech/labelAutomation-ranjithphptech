@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Order xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OrderStatus>Order Accepted</OrderStatus>
+  <SubStatus />
+  <ArtworkRequired>True</ArtworkRequired>
+  <ArtworkStatus>Approved</ArtworkStatus>
+  <Site>ovs.bgpconnect.com</Site>
+  <OrderID>B0364929</OrderID>
+  <OrderLink>https://ovs.bgpconnect.com/Order?orderId=364929</OrderLink>
+  <CustomerID>1766</CustomerID>
+  <CustomerName>TEXTURE CLOTHING COMPANY</CustomerName>
+  <CustomerEmail>merch2@textureclothing.in</CustomerEmail>
+  <CreatedDate>18/10/2023 01:08</CreatedDate>
+  <CustomerRef>241drs048s visc</CustomerRef>
+  <RequiredDate>23/10/2023</RequiredDate>
+  <OrderedFromLocationID>india</OrderedFromLocationID>
+  <OrderedFromLocation>Sainmarks Industries India Private Ltd</OrderedFromLocation>
+  <InvoiceLocation>
+    <LocationID>2001</LocationID>
+    <LocationName>TEXTURE CLOTHING COMPANY</LocationName>
+    <AddressLine1>D.NO.7/701,A1,A2,K.S.R.NAGAR</AddressLine1>
+    <AddressLine2>NEAR G.N.GARDEN,NERUPERICHAL</AddressLine2>
+    <AddressLine3>TIRUPUR</AddressLine3>
+    <City />
+    <PostCode>641602</PostCode>
+    <isoCountryCode>IN</isoCountryCode>
+  </InvoiceLocation>
+  <DeliveryLocation>
+    <LocationID>2001</LocationID>
+    <LocationName>TEXTURE CLOTHING COMPANY</LocationName>
+    <AddressLine1>D.NO.7/701,A1,A2,K.S.R.NAGAR</AddressLine1>
+    <AddressLine2>NEAR G.N.GARDEN,NERUPERICHAL</AddressLine2>
+    <AddressLine3>TIRUPUR</AddressLine3>
+    <City />
+    <PostCode>641602</PostCode>
+    <isoCountryCode>IN</isoCountryCode>
+  </DeliveryLocation>
+  <OrderItems>
+    <OrderItem>
+      <OrderItemID>559890</OrderItemID>
+      <PurchaseOrder>
+        <Reference />
+      </PurchaseOrder>
+      <Asset Id="9037">
+        <Name>ATU5</Name>
+        <Description>VISCOSA TAG-ATU5-60X45MM</Description>
+        <Codes>
+          <Code Name="BPC" Value="TAG004786" />
+        </Codes>
+        <ProductTypes>
+          <ProductType Domain="Retailer">Additional Tag</ProductType>
+          <ProductType Domain="Britannia">Graphic Swing Ticket</ProductType>
+        </ProductTypes>
+      </Asset>
+      <Item>
+        <ItemID>4229477</ItemID>
+        <Quantity>5755</Quantity>
+        <SizeChartItem Id="0" />
+        <Variables />
+      </Item>
+    </OrderItem>
+  </OrderItems>
+</Order>

@@ -43,7 +43,7 @@ connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost',heartbeat=1800))
 channel = connection.channel()
 
-channel.queue_declare(queue='LabelAutomation')
+channel.queue_declare(queue='LabelAutomation',durable=True)
 print(" [*] Waiting for order. To exit press CTRL+C")
 while True:
     for zipFile in os.listdir(newOrderDir):
@@ -53,7 +53,12 @@ while True:
             "service": "artwork_customer_approval",
             "order": baseNameofZip
             }
-        channel.basic_publish(exchange='', routing_key='LabelAutomation', body=json.dumps(d))
+        channel.basic_publish(
+            exchange='', 
+            routing_key='LabelAutomation', 
+            body=json.dumps(d),
+            properties=pika.BasicProperties(delivery_mode=pika.DeliveryMode.Persistent)
+            )
         print("Order sent for processing "+zipFile)
     time.sleep(5)   
         

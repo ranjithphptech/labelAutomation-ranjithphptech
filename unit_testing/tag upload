@@ -1,0 +1,27 @@
+import re
+from playwright.sync_api import Playwright, sync_playwright, expect
+
+def run(playwright: Playwright) -> None:
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto("http://172.16.17.21:8000/login")
+    page.get_by_role("button", name="Log in").click()
+    page.get_by_role("textbox", name="Product Code").click()
+    page.get_by_role("textbox", name="Product Code").press("CapsLock")
+    page.get_by_role("textbox", name="Product Code").fill("AT F S 20")
+    page.get_by_role("textbox", name="Front Side").click()
+    page.get_by_role("textbox", name="Front Side").set_input_files("/home/ranjith/Art_work_automation/samples/dynamic/AT F S 20/AT F S 20_FRONT.svg")
+    page.get_by_role("textbox", name="Back Side").click()
+    page.get_by_role("textbox", name="Back Side").set_input_files("/home/ranjith/Art_work_automation/samples/dynamic/AT F S 20/AT F S 20_BACK.svg")
+    page.get_by_role("checkbox", name="Dynamic label").check()
+    page.get_by_role("button", name="Submit").click()
+    page.get_by_role("button", name="Close").click()
+
+    # ---------------------
+    context.close()
+    browser.close()
+
+
+with sync_playwright() as playwright:
+    run(playwright)

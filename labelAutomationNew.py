@@ -3,7 +3,6 @@ import shutil
 from db import conn
 from zipfile import ZipFile
 import xml.etree.ElementTree as ET
-from xml.etree.ElementTree import QName
 from pathlib import Path
 import configparser
 from datetime import datetime
@@ -12,8 +11,10 @@ from helpers import *
 import ean13barcode as bc
 from bs4 import BeautifulSoup
 from pdf2image import convert_from_path
-from PIL import Image
 from fpdf import FPDF
+from lxml import etree
+import code128 as c128bc
+
 current_file_path = os.path.abspath(__file__)
 current_dir = os.path.dirname(current_file_path)
 mandatoryIds=[]
@@ -29,23 +30,22 @@ def genProcess(processName='',zipFile=''):
     failedOrders = config['paths']['failedOrders']
     currentZipFileName = baseNameOfZip
     currentZipOutputDir = ""
-    latexSvgFiles = ""
+    orderID,assetName,design_code,product_code= "","","",""
     try:
-        print("process is going on "+zipFile)
         f = os.path.join(orderProcessing,zipFile)
         ordersData = {}
         with ZipFile(f,'r') as zObject:
-            designCodes =[]
+            assestLists =[]
             currentZipOutputDir = orderOutputDir+"/"+baseNameOfZip
             Path(currentZipOutputDir).mkdir(parents=True, exist_ok=True)
             zObject.extractall(currentZipOutputDir)
-            orderID = ""
-            for xmlFile in Path(currentZipOutputDir).rglob('*.xml'):
+          
+            for xmlFile in sorted(Path(currentZipOutputDir).rglob('*.xml')):
+                latexSvgFiles = ""
                 XMLDir = os.path.splitext(xmlFile)[0].replace(" ","_")
                 xmlFilename =  os.path.basename(xmlFile).split('/')[-1]
-                print("XML file name "+xmlFilename)
                 xmlFileBasename = os.path.splitext(xmlFilename)[0]
-                designCodes.append(xmlFileBasename)
+               
                 Path(XMLDir).mkdir(parents=True, exist_ok=True)
                 xmlFileBasename = xmlFileBasename.replace(" ","_")
                 XMLtree = ET.parse(xmlFile)
@@ -54,14 +54,18 @@ def genProcess(processName='',zipFile=''):
                 assetNameList = XMLRoot.find("./OrderItems/OrderItem/Asset/Name").text.split(",")
                 product_code = XMLRoot.find("./OrderItems/OrderItem/Asset/Codes/Code").attrib['Value']
                 
+                assestLists.append(assetNameList[0])
                 if len(assetNameList)==2:
                     assetName = assetNameList[1]
+                    assestLists.append(assetNameList[1])
                 else:
                     assetName = assetNameList[0]
-            
-                assetName = assetName.strip() 
-                
+
+                design_code = assetName
+                assetName += "_"+product_code.strip() 
+          
                 dbcursor = conn.cursor(dictionary=True)
+               
                 dbcursor.execute("SELECT * FROM label_list WHERE label_name = '"+assetName+".svg' ")
                 labelDet = dbcursor.fetchone()
                 
@@ -96,9 +100,10 @@ def genProcess(processName='',zipFile=''):
                     frontSvgRoot = frontSVGtree.getroot()  
                     frontSvgName = '1.svg'
                     frontSvgFilePath = currentZipOutputDir+'/'+xmlFileBasename+'/'+frontSvgName
+                    labelSize = frontSvgRoot.attrib.get('data-size', '')
                 else:
                     frontSideExists = False
-                    
+                
                 tagGroups = {}
                 tagSno = 1
                 if labelDet['dynamic']==1:   
@@ -109,8 +114,8 @@ def genProcess(processName='',zipFile=''):
                     else:
                         currentAssetName = assetName+"_FRONT"
                         currentsvgString = svgDir + '/' + currentAssetName + '.svg'
-                    
-                
+                        frontSideExists = False
+                        
                     currentSvgtree = ET.parse(currentsvgString)
                     currentSvgRoot = currentSvgtree.getroot()
                     
@@ -125,6 +130,7 @@ def genProcess(processName='',zipFile=''):
                     size_positions = get_size_position(currentSvgRoot)
                     variable_size_text_style = size_positions.get('variable_size_text', {}).get('style', None)
                     variable_size_box_style = size_positions.get('variable_size_box', {}).get('style', None)
+                    variable_size_box_path_style= size_positions.get('variable_size_box_path', {}).get('style', None)
                     
                     namespaces = {node[0]: node[1] for _, node in ET.iterparse(currentsvgString, events=['start-ns'])}
                     for key, value in namespaces.items():
@@ -132,25 +138,15 @@ def genProcess(processName='',zipFile=''):
                     
                     supplierStype,country,color = '','',''
                     all_sizes=[] 
-                    name_attributes=['ITA','ANNI-YEARS','MESI-MONTHS','YEARS','MONTHS','IT'] 
+                    tag_size_chart = currentSvgRoot.find(".//*[@id='size_rect_selected']")
+                    if tag_size_chart is not None:
+                        all_sizes = extract_sizes_from_xml_selected_tag(XMLRoot)                              
+                    else:                        
+                        all_sizes = extract_sizes_from_xml_all_tag(XMLRoot)    
                     sizes = []
                     selected_size=''
                     
-                    for name_attr in name_attributes:
-                        for size in XMLRoot.findall(f".//SizeChartItem/Size[@Name='{name_attr}']"):
-                            size_value = size.get("Value")
-                            if size_value and size_value not in sizes:
-                                    sizes.append(size_value)
-                        
-                    all_sizes = sizes
-                    
                     items = XMLRoot.findall("./OrderItems/OrderItem/Item")
-                    
-                    if len(items)>1:
-                        labelRatio = '0.5'
-                    else:
-                        labelRatio = '0.5'
-                        
                     season_code =""
                     for item in items:
                         mandatoryIds = ['quantity']
@@ -160,29 +156,37 @@ def genProcess(processName='',zipFile=''):
                         qty = item.find('./Quantity').text  
                         status = set_svg_text(SVGroot, 'quantity', f"Qty-{qty}")
                         if status==False:
-                            raise Exception("Sorry, not found in svg image "+itemID)
+                            raise Exception("Sorry, Id not found in svg image "+itemID)
                         selling_price= 0
                         selling_price_fraction=00
                         outPutSvgName = itemID+"_"+str(tagSno)+'.svg'
                         currentSvgFilePath=currentZipOutputDir+'/'+xmlFileBasename+'/'+outPutSvgName
                         selected_name_attr =''
+                        code128_barcode=''
+                        currency=''
+                        article_name,barcodenumber='',''
+                        var_month,var_year ='',''
                         for size in item.findall("./SizeChartItem/Size"):
                             nameAttr = size.attrib['Name'].replace(' ', '_')
                             nameAttr = re.sub(r'[-_]+', '-', nameAttr).strip('-') 
-                            if nameAttr=='ANNI-YEARS' or nameAttr=='MONTHS' or nameAttr=='YEARS':
-                                if(nameAttr=='ANNI-YEARS' or nameAttr=='YEARS' or nameAttr=="MONTHS"):
-                                        selected_size=size.attrib['Value'] 
-                                        selected_name_attr=nameAttr                                    
-                                set_svg_text(SVGroot, 'Age_Text', nameAttr)  
-                                set_svg_text(SVGroot, 'Size_MONTHS_OR_YEAR', size.attrib['Value'])     
+                            
+                            if(nameAttr=='YEARS'):
+                                selected_size=size.attrib['Value'] 
+                                selected_name_attr=nameAttr   
+                                set_svg_text(SVGroot, 'YEARS', size.attrib)
+                             
+                            if( nameAttr=="ANNI-YEARS"):
+                                selected_size=size.attrib['Value'] 
+                                selected_name_attr=nameAttr      
                                 set_svg_text(SVGroot, 'ANNI-YEARS', size.attrib['Value'])
-                                set_svg_text(SVGroot, 'YEARS', size.attrib['Value'])
+                            
+                            if( nameAttr=="MONTHS"):
+                                selected_size=size.attrib['Value'] 
+                                selected_name_attr=nameAttr      
                                 set_svg_text(SVGroot, 'MONTHS', size.attrib['Value'])
                                 
                             elif nameAttr=='CM' :
-                                set_svg_text(SVGroot, nameAttr, size.attrib['Value'])
-                                set_svg_text(SVGroot, f'size_{nameAttr}', size.attrib['Value'])
-                                set_svg_text(SVGroot, 'unit_text', nameAttr)                       
+                                set_svg_text(SVGroot, nameAttr, size.attrib['Value'])                    
                             
                             else:
                                 set_svg_text(SVGroot, nameAttr, size.attrib['Value'])
@@ -207,7 +211,8 @@ def genProcess(processName='',zipFile=''):
 
                                     if(currency_name=='Symbol'):
                                         currency= curr.text                                              
-                                    
+                                    else:
+                                        currency=''
                             if variable.attrib['Question']=='Selling Price':
                                 answer_value_element = variable.find("./Answer/AnswerValues/AnswerValue")
 
@@ -238,14 +243,24 @@ def genProcess(processName='',zipFile=''):
                                 
                             if variable.attrib['Question']=='Country':
                                 country = variable.find("./Answer/AnswerValues/AnswerValue").text
-                                print(country)
-                                
                             if variable.attrib['Question']=='Color':
-                                color = variable.find("./Answer/AnswerValues/AnswerValue").text
+                                tag_color = variable.find("./Answer/AnswerValues/AnswerValue").text
+                                set_svg_text(SVGroot, 'tag_color', tag_color)
                                 
                             if variable.attrib['Question']=='Style Code':
                                 styleCode = variable.find("./Answer/AnswerValues/AnswerValue").text
                                 set_svg_text(SVGroot, 'style_code', styleCode)
+                                
+                            if variable.attrib['Question']=='Material(Model Code)':
+                                material_model_code = variable.find("./Answer/AnswerValues/AnswerValue").text
+                                set_svg_text(SVGroot, 'material_model_code', material_model_code)
+                                
+                            if variable.attrib['Question']=='Article name':
+                                article_name = variable.find("./Answer/AnswerValues/AnswerValue").text
+                               
+                            if variable.attrib['Question']=='Color Code':
+                                colorCode = variable.find("./Answer/AnswerValues/AnswerValue").text
+                                set_svg_text(SVGroot, 'color_code', colorCode)
                             
                             if variable.attrib['Question']=='Supplier Style':
                                 supplierStype = variable.find("./Answer/AnswerValues/AnswerValue").text              
@@ -253,7 +268,7 @@ def genProcess(processName='',zipFile=''):
                             if variable.attrib['Question']=='Translation Code':
                                 translations = variable.findall("./Answer/AnswerValues/AnswerValue")
                                 for translation in translations:
-                                    lang = translation.attrib['Name']                      
+                                    lang = translation.attrib['Name'].upper()        
                                     set_svg_text(SVGroot, f'translation_code_{lang}', translation.text)
 
                             if variable.attrib['Question']=='Material Type':
@@ -271,13 +286,30 @@ def genProcess(processName='',zipFile=''):
                                 department = variable.find("./Answer/AnswerValues/AnswerValue").text                        
                                 set_svg_text(SVGroot, 'department', department)
 
+                            if variable.attrib['Question']=='COMMODITY':
+                                commodity = variable.find("./Answer/AnswerValues/AnswerValue").text                        
+                                set_svg_text(SVGroot, 'commodity', commodity)
+
+                            if variable.attrib['Question']=='Net Quantity':
+                                net_quantity = variable.find("./Answer/AnswerValues/AnswerValue").text                        
+                                set_svg_text(SVGroot, 'net_quantity', net_quantity)
+                            
+                            if variable.attrib['Question']=='OKEO-TEX':
+                                okeo_tex_value = variable.find("./Answer/AnswerValues/AnswerValue").text 
+                                set_category(SVGroot,f"okeo_tex_{okeo_tex_value}") 
+                                                  
+                            if variable.attrib['Question']=='MONTH':
+                                var_month = variable.find("./Answer/AnswerValues/AnswerValue").text  
+                                
+                            if variable.attrib['Question']=='YEAR':
+                                var_year = variable.find("./Answer/AnswerValues/AnswerValue").text
+                                
                             if variable.attrib['Question']=='Sub Department':
                                 subdepartment = variable.find("./Answer/AnswerValues/AnswerValue").text
                                 set_svg_text(SVGroot, 'sub_department', subdepartment)                           
                                 
                             if variable.attrib['Question']=='Barcode Number':
                                 barcodenumber = variable.find("./Answer/AnswerValues/AnswerValue").text
-                                data=barcodenumber
                                 bar1 = barcodenumber[0] 
                                 bar2 = barcodenumber[1:7]
                                 bar3 = barcodenumber[7:]
@@ -287,28 +319,88 @@ def genProcess(processName='',zipFile=''):
                                     set_svg_text(SVGroot, f'{bar_id}', bar_text)
 
                                 barcodeArea = SVGroot.find(".//*[@id='Barcode']")
-                                for rect in barcodeArea:
-                                    labelDet['barcode_x_position'] = rect.attrib['x']
-                                    labelDet['barcode_y_position'] = rect.attrib['y']
-                                    break                                
+                                if barcodeArea is not None:
+                                    for rect in barcodeArea:
+                                        labelDet['barcode_x_position'] = rect.attrib['x']
+                                        labelDet['barcode_y_position'] = rect.attrib['y']
+                                        break                                
+                                else:
+                                    raise Exception("Barcode area not found in svg image")
+                                
+                            if variable.attrib['Question']=='EAN 128C':
+                                code128_barcodenumber = variable.find("./Answer/AnswerValues/AnswerValue").text
+                                code128_barcode=code128_barcodenumber
+                                set_svg_text(SVGroot, 'ean_128c', code128_barcode)
+                                code128_barcodeArea = SVGroot.find(".//*[@id='Barcode_ean_128c']")
+                                
+                                if code128_barcodeArea is not None:
+                                    
+                                    for rect in code128_barcodeArea:
+                                        labelDet['code128_barcode_x_position'] = rect.attrib['x']
+                                        labelDet['code128_barcode_y_position'] = rect.attrib['y']
+                                        break  
+                                else:
+                                    raise Exception("Barcode code 128 id not found in svg image")
                                 
                         if selected_category !='':
                             set_category(SVGroot,selected_category)  
                         else:
                             set_category(SVGroot,selected_name_attr)
+                        if var_month and var_year:
+                            set_svg_text(SVGroot, 'month_year', f"{var_month}-{var_year}")
                         
                         tagGroups.setdefault(country, {}).setdefault(color, {}).setdefault(supplierStype, {}).setdefault('tagList',[]).append(outPutSvgName)
                         
-                        set_barcode(labelDet['barcode_x_position'],labelDet['barcode_y_position'],labelDet['barcode_width'],data,SVGroot)
-                        size_order= sort_dynamic_list(all_sizes)
-                        size_append(SVGroot,size_order,selected_size,variable_size_text_style,variable_size_box_style)
-                        if currency=="₹":           
-                            selling_price_append(SVGroot,currency,selling_price,selling_price_fraction,currency_y_position,selling_price_fraction_y_position,currency_india_style,selling_price_fraction_style,selling_price_style)
+                        if barcodenumber !='':
+                            set_barcode(labelDet['barcode_x_position'],labelDet['barcode_y_position'],labelDet['barcode_width'],barcodenumber,SVGroot)
+                            
+                        if code128_barcode !='':
+                            set_code128_barcode(labelDet['code128_barcode_x_position'],labelDet['code128_barcode_y_position'],labelDet['code128_barcode_width'],code128_barcode,SVGroot)
+                            
+                        if selected_size!='':
+                          
+                            if tag_size_chart is not None:
+                                                                 
+                                        int_order = ['XS', 'S', 'M', 'L', 'XL', 'XXL','3XL','XXXL','4XL']
+                                        int_rank = {size: index for index, size in enumerate(int_order)}
+                                        int_index = all_sizes[0].index('INT')
+                                        sorted_array = [all_sizes[0]] + sorted(
+                                            all_sizes[1:], key=lambda x: int_rank.get(x[int_index], float('inf'))
+                                        )
+                                        add_text_boxes_to_svg(SVGroot, sorted_array, selected_size,variable_size_box_style, variable_size_text_style)
+                            else:   
+                                
+                                size_order= sort_dynamic_list(all_sizes)                               
+                                tag_size_chart_circle = SVGroot.find(".//*[@id='size_oval_1']") 
+                                               
+                                if tag_size_chart_circle is not None:  
+                                                                    
+                                    if len(all_sizes) !=0:                                       
+                                        size_append_circle(SVGroot,'size_oval_1',size_order,selected_size,variable_size_text_style,variable_size_box_style,variable_size_box_path_style)
+                                        size_append_circle(SVGroot,'size_oval_2',size_order,selected_size,variable_size_text_style,variable_size_box_style,variable_size_box_path_style)                   
+                                else:
+                                    tag_size = SVGroot.find(".//*[@id='size_rect']") 
+                                    
+                                    if tag_size is not None: 
+                                        if len(all_sizes) !=0: 
+                                            size_append(SVGroot,size_order,selected_size,variable_size_text_style,variable_size_box_style)               
+                     
+                        selling_price_type = currentSvgRoot.find(".//*[@id='selling_price_full']")
+                        
+                        if selling_price_type is None:
+                            
+                            if currency=="₹":           
+                                selling_price_append(SVGroot,currency,selling_price,selling_price_fraction,currency_y_position,selling_price_fraction_y_position,currency_india_style,selling_price_fraction_style,selling_price_style)
+                            else:                           
+                                selling_price_append(SVGroot,currency,selling_price,selling_price_fraction,currency_y_position,selling_price_fraction_y_position,currency_style,selling_price_fraction_style,selling_price_style)
                         else:
-                            selling_price_append(SVGroot,currency,selling_price,selling_price_fraction,currency_y_position,selling_price_fraction_y_position,currency_style,selling_price_fraction_style,selling_price_style)
-                        set_apperal_category(SVGroot, selected_category)  
+                            print(f"currency-{currency},selling_price- {selling_price}{selling_price_fraction}")
+                            set_svg_text(SVGroot, 'selling_price_full', f"{currency} {selling_price}{selling_price_fraction}")
+                            
+                        if selected_category !='':
+                            set_apperal_category(SVGroot, selected_category) 
+                     
                         SVGtree.write(currentSvgFilePath,encoding='utf-8', xml_declaration=True)
-                        #add_background_to_svg(currentSvgFilePath,'/home/ranjith/Art_work_automation/Sainmarknewlogo.png')
                         #svg file generation end of xml file end
                         tagSno +=1
                     
@@ -334,7 +426,6 @@ def genProcess(processName='',zipFile=''):
 
                     title = supplierStype+" - "+country+" - "+color+" - "+orderID
                     buyerTxt         = '               OVS'
-                    submittedDateTxt = createdDate
                     
                     pdfFileName = (assetName+"_"+baseNameOfZip).replace(" ","_")
                     latexFileName = pdfFileName
@@ -346,36 +437,38 @@ def genProcess(processName='',zipFile=''):
                     
                     svg_dir = Path(currentZipOutputDir) / xmlFileBasename
                     pdfPageBody =""
-                    # Iterate over tagGroups to create pages
+                    
                     for country, colorGroups in tagGroups.items():
                         for color, supplierGroups in colorGroups.items():
                             for supplierStyle, tagData in supplierGroups.items():                
                                 tagList = tagData.get('tagList', [])
-                                title = supplierStyle+" - "+country+" - "+color+" - "+orderID
-                                print("title --- --  "+title)
-                                pdfPageBody += r'''\begin{table}
-                                \centering
-                        \begin{tabularx}{0.5\textwidth}{|*{7}{Y|}}
-                        \hline 
-                            \multirow{2}{=}{ \begin{center} \includegraphics[height=1.6cm,width=3.9cm]{Sainmarknewlogo} \end{center} } 
-                            &\multicolumn{3}{|p{10cm}|}{BUYER : '''+buyerTxt+r'''}  &\multirow{2}{=}{  \begin{center} ARTWORK\\ FOR\\ APPROVAL \end{center}} \\
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{CUSTOMER : '''+customerName+r'''} &\\
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{DESIGN CODE : '''+assetName+r'''} &\\ 
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{PRODUCT CODE : '''+product_code+r'''} &\\
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{SUBMITTED DATE : '''+submitted_date+r'''} &\\
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{} &\\
-                        \hline
-                        \end{tabularx}
-                        \end{table}
+                                if color !='':
+                                        title = supplierStyle+" - "+country+" - "+color+" - "+orderID   
+                                else:
+                                    title = supplierStyle+" - "+country+" - "+orderID 
+                                pdfPageBody += r'''\renewcommand{\arraystretch}{1.5}
+                        \begin{table}[h]
+                        \centering
+                           \begin{tabular}{|p{8cm}|p{11cm}|p{8cm}|} 
+                            \hline
+                           \multirow{6}{8cm}{ \centering \includegraphics[height=1.7cm,width=3.9cm]{Sainmarknewlogo} }   & BUYER : '''+buyerTxt+r''' & \multirow{6}{8cm}{\centering \makecell{ARTWORK \\ FOR\\ APPROVAL}} \\
+                            \cline{2-2}
+                            & CUSTOMER : '''+customerName+r''' & \\
+                            \cline{2-2}
+                            & DESIGN CODE : '''+design_code.replace("_","\_").replace("&","\&")+r''' & \\
+                            \cline{2-2}
+                            & PRODUCT CODE : '''+product_code.replace("_","\_").replace("&","\&")+r''' & \\
+                            \cline{2-2}
+                            & SUBMITTED DATE : '''+submitted_date+r''' & \\
+                            \cline{2-2}
+                            &  & \\
+                            \hline
+                        \end{tabular}
+                    \end{table}
                         \begin{center}
                         {\Large \textbf{\fontspec{Arial}\textcolor{red}{'''+title+r'''}}}
                         \end{center}
-                        \hfill\break
+                        \hfill \break
                         \centering '''
                                     
                                 for tag in tagList:
@@ -384,11 +477,14 @@ def genProcess(processName='',zipFile=''):
                                     width, height = get_svg_dimensions(svg_path)
                                     print(title+"-"+baseNameSVG)
                                     latexSvgFilesCode +=f'\\includesvg[inkscapearea=page, width={width:.2f}mm, height={height:.2f}mm]{{{baseNameSVG}}} \n'   
+                                    latexSvgFilesCode += '\\vspace{10mm}  \n'  
+                                    latexSvgFilesCode += '\\hspace{10mm}  \n' 
                                 pdfPageBody += latexSvgFilesCode+"\n\\newpage"
                     
                     with open(latexFilePath,'w') as clatexFile:
                         clatexFile.write(r'''\documentclass{article}
-                        \usepackage{multirow,tabularx}
+                        \usepackage{multirow}
+                        \usepackage{makecell}
                         \usepackage{graphicx}
                         \usepackage[export]{adjustbox}
                         \usepackage{xcolor}
@@ -407,63 +503,9 @@ def genProcess(processName='',zipFile=''):
                         \begin{document}
                             '''+pdfPageBody+r'''
                         \end{document} ''')
-                    
-                    # for svg in sorted(os.listdir(svg_dir)):
-                    #     if svg.endswith(".svg"):
-                    #         svg_path = Path(currentZipOutputDir) / xmlFileBasename / svg
-                    #         baseNameSVG = os.path.splitext(svg)[0]
-                    #         width, height = get_svg_dimensions(svg_path)
-                    #         print(f"width : {width}   height : {height}")
-                    #         latexSvgFiles +=f'\\includesvg[inkscapearea=page, width={width:.2f}mm, height={height:.2f}mm]{{{baseNameSVG}}} \n'                       
-                    
-                    # with open(latexFilePath,'w') as clatexFile:
-                    #     clatexFile.write(r'''\documentclass{article}
-                    #     \usepackage{multirow,tabularx}
-                    #     \usepackage{graphicx}
-                    #     \usepackage[export]{adjustbox}
-                    #     \usepackage{xcolor}
-                    #     \usepackage[inkscapelatex=false]{svg}
-                    #     \usepackage[a3paper,left=5mm,right=5mm,bottom=5mm]{geometry}
-                    #     \setlength{\voffset}{-0.75in}
-                    #     \setlength{\headsep}{5pt}
-                    #     \usepackage{layout}
-                    #     \usepackage{fontspec}
-                    #     \newcolumntype{Y}{>{\centering\arraybackslash}X}
-                    #     \renewcommand{\arraystretch}{1.2}
-                    #     \graphicspath{{'''+graphicspath+r'''}}
-                    #     %\IfFontExistsTF{Arial-Bold}{\newfontfamily\Arial{Arial}}{\textbf{Warning: Font Arial not found.}}
-                    #     '''+latexFonts+r'''
-                    #     \begin{document}
-                    #     \begin{table}
-                    #     \begin{tabularx}{1\textwidth}{|*{7}{Y|}}
-                    #     \hline 
-                    #         \multirow{2}{=}{ \begin{center} \includegraphics[height=1.6cm,width=3.9cm]{Sainmarknewlogo} \end{center} } 
-                    #         &\multicolumn{3}{|p{10cm}|}{BUYER : '''+buyerTxt+r'''}  &\multirow{2}{=}{  \begin{center} ARTWORK\\ FOR\\ APPROVAL \end{center}} \\
-                    #     \cline{2-4}
-                    #         &\multicolumn{3}{l|}{CUSTOMER : '''+customerName+r'''} &\\
-                    #     \cline{2-4}
-                    #         &\multicolumn{3}{l|}{DESIGN CODE : '''+assetName+r'''} &\\ 
-                    #     \cline{2-4}
-                    #         &\multicolumn{3}{l|}{PRODUCT CODE : '''+product_code+r'''} &\\
-                    #     \cline{2-4}
-                    #         &\multicolumn{3}{l|}{SUBMITTED DATE : '''+submittedDateTxt+r'''} &\\
-                    #     \cline{2-4}
-                    #         &\multicolumn{3}{l|}{} &\\
-                    #     \hline
-                    #     \end{tabularx}
-                    #     \end{table}
-                    #     \begin{center}
-                    #     {\Large \textbf{\fontspec{Arial}\textcolor{red}{'''+title+r'''}}}
-                    #     \end{center}
-                    #     \hfill\break
-                    #     \centering 
-                    #     '''+latexSvgFiles+r'''
-                    #     \end{document} ''')
                         
                     # * dynamic tag latex creation end        
 
- 
-               
                 else:
                     print('static label')
                     supplierStype,country,color = '','',''
@@ -485,11 +527,6 @@ def genProcess(processName='',zipFile=''):
                     currentSvgFilePath=currentZipOutputDir+'/'+xmlFileBasename+'/'+itemID+'.svg'
                     frontSVGtree.write(currentSvgFilePath,encoding='utf-8', xml_declaration=True)
                     
-                    font_families = extract_font_families_from_style(currentSvgFilePath)
-                    print (f"font Familes : {font_families}")
-                    width, height = get_svg_dimensions(currentSvgFilePath)
-                    print (f"svg width : {width} svg height :{height}")
-                    
                     isPDFOutputDir = os.path.exists(currentZipOutputDir+'/pdf')
                     Path(currentZipOutputDir+'/pdf').mkdir(parents=True, exist_ok=True)
                     if isPDFOutputDir==False:
@@ -497,7 +534,6 @@ def genProcess(processName='',zipFile=''):
                 
                     title = supplierStype+" - "+country+" - "+orderID
                     buyerTxt         = '               OVS'
-                    submittedDateTxt = createdDate
                     
                     pdfFileName = (assetName+"_"+baseNameOfZip).replace(" ","_")
                     latexFileName = pdfFileName
@@ -513,11 +549,12 @@ def genProcess(processName='',zipFile=''):
                             svg_path = Path(currentZipOutputDir) / xmlFileBasename / svg
                             baseNameSVG = os.path.splitext(svg)[0]
                             width, height = get_svg_dimensions(svg_path)
-                            print(f"width : {width}   height : {height}")
-                            latexSvgFiles +=f'\\includesvg[inkscapearea=page, width={width:.2f}mm, height={height:.2f}mm]{{{baseNameSVG}}} \n'             
+                            print(f"width : {width}   height : {height}")          
+                            latexSvgFiles +=f'\\includesvg[inkscapearea=page, width=0.666\\linewidth]{{{baseNameSVG}}} \n'             
                     with open(latexFilePath,'w') as clatexFile:
                         clatexFile.write(r'''\documentclass{article}
-                        \usepackage{multirow,tabularx}
+                        \usepackage{multirow}
+                        \usepackage{makecell}
                         \usepackage{graphicx}
                         \usepackage[export]{adjustbox}
                         \usepackage{xcolor}
@@ -533,29 +570,34 @@ def genProcess(processName='',zipFile=''):
                         \graphicspath{{'''+graphicspath+r'''}}
                         '''+latexFonts+r'''
                         \begin{document}
-                        \begin{table}
+                        \begin{table}[h]
                         \centering
-                        \begin{tabularx}{0.5\textwidth}{|*{7}{Y|}}
-                        \hline 
-                            \multirow{2}{=}{ \begin{center} \includegraphics[height=1.7cm,width=3.9cm]{Sainmarknewlogo} \end{center} } 
-                            &\multicolumn{3}{|p{10cm}|}{BUYER : '''+buyerTxt+r'''}  &\multirow{2}{=}{  \begin{center} ARTWORK\\ FOR\\ APPROVAL \end{center}} \\
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{CUSTOMER : '''+customerName+r'''} &\\
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{DESIGN CODE : '''+assetName+r'''} &\\ 
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{PRODUCT CODE : '''+product_code+r'''} &\\
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{SUBMITTED DATE : '''+submitted_date+r'''} &\\
-                        \cline{2-4}
-                            &\multicolumn{3}{l|}{} &\\
-                        \hline
-                        \end{tabularx}
+                           \begin{tabular}{|p{8cm}|p{11cm}|p{8cm}|} 
+                            \hline
+                           \multirow{6}{8cm}{ \centering \includegraphics[height=1.7cm,width=3.9cm]{Sainmarknewlogo} }   & BUYER : '''+buyerTxt+r''' & \multirow{6}{8cm}{\centering \makecell{ARTWORK \\ FOR\\ APPROVAL}} \\
+                            \cline{2-2}
+                            & CUSTOMER : '''+customerName.replace("_","\_").replace("&","\&")+r''' & \\
+                            \cline{2-2}
+                            & DESIGN CODE : '''+design_code.replace("_","\_").replace("&","\&")+r''' & \\
+                            \cline{2-2}
+                            & PRODUCT CODE : '''+product_code.replace("_","\_").replace("&","\&")+r''' & \\
+                            \cline{2-2}
+                            & SUBMITTED DATE : '''+submitted_date+r''' & \\
+                            \cline{2-2}
+                            &  & \\
+                            \hline
+                         \end{tabular}
                         \end{table}
                         \begin{center}
-                        {\Large \textbf{\fontspec{Arial-Bold}\textcolor{red}{'''+title+r'''}}}
+                           \hfill \break
+                           \hfill \break
+                            {\Large \textbf{\fontspec{Arial-Bold}\textcolor{red}{'''+title+r'''}}}
+                           \break
+                           \break
+                           \break
+                           {\Large  \textbf{\fontspec{ArialMT}{'''+labelSize+r'''}}}
                         \end{center}
-                        \hfill\break
+                         \hfill \break
                         \centering 
                         '''+latexSvgFiles+r'''
                         \end{document} ''')
@@ -566,25 +608,21 @@ def genProcess(processName='',zipFile=''):
                 outputDirStr = current_dir+"/"+str(Path(currentZipOutputDir) / "pdf")   
                 
                 #! To run the xelatex command in terminal
-                # print(f'xelatex --shell-escape --enable-write18 --output-directory="{outputDirStr}" "{latexFilePathStr}"')
-                # exit()
                 x = os.system(f'xelatex --shell-escape --enable-write18 --output-directory="{outputDirStr}" "{latexFilePathStr}"')
-                reduce_pdf_quality(f'{outputDirStr}/{pdfFileName}.pdf',f'{outputDirStr}/{pdfFileName}_compressed.pdf')
+                # reduce_pdf_quality(f'{outputDirStr}/{pdfFileName}.pdf',f'{outputDirStr}/{pdfFileName}_compressed.pdf')
                 #! to remove the original pdf file
-                # os.remove(f'{outputDirStr}/{pdfFileName}.pdf')
-            # print('mail')
-            # exit()
+                #os.remove(f'{outputDirStr}/{pdfFileName}.pdf')
             if ordersData:
                 order_id = list(ordersData.keys())[0]
                 toemail = ordersData[order_id].get('customerEmail')
                 approval_mail_status = 'P'
                 submitted_date = str(datetime.now().strftime("%Y-%m-%d"))
                 dbcursor = conn.cursor()
-                dbcursor.execute("INSERT INTO orders(order_id, buyer, customer_id,customer_name, customer_email_id,approval_mail_status, design_codes, submitted_date,status, created_date_time) VALUES('"+order_id+"', 'OVS','"+ordersData[order_id].get('customerID')+"', '"+ordersData[order_id].get('customerName')+"', '"+ordersData[order_id].get('customerEmail')+"','"+approval_mail_status+"', '"+(",".join(designCodes))+"', '"+submitted_date+"', 'CAP', '"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"');")
+                dbcursor.execute("INSERT INTO orders(order_id, buyer, customer_id,customer_name, customer_email_id,approval_mail_status, tag_list, submitted_date,status, created_date_time) VALUES('"+order_id+"', 'OVS','"+ordersData[order_id].get('customerID')+"', '"+ordersData[order_id].get('customerName')+"', '"+ordersData[order_id].get('customerEmail')+"','"+approval_mail_status+"', '"+(",".join(assestLists))+"', '"+submitted_date+"', 'CAP', '"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"');")
                 order_ins_id = dbcursor.lastrowid
                 conn.commit()
-                    
-            res = send_mail(subject='Subject',toMailid=toemail,attachmentPath=currentZipOutputDir+'/pdf')
+                                    
+            res = send_mail(subject=baseNameOfZip,toMailid=toemail,attachmentPath=currentZipOutputDir+'/pdf')
             if res['status']=='success':
                 approval_mail_status = 'S'
                 shutil.move(orderProcessing+'/'+baseNameOfZip+'.zip', customerApprovalPending+'/'+baseNameOfZip+'.zip')
@@ -592,7 +630,14 @@ def genProcess(processName='',zipFile=''):
                 approval_mail_status = 'F'
                 shutil.move(orderProcessing+'/'+baseNameOfZip+'.zip', failedOrders+'/'+baseNameOfZip+'.zip')
                 dbcursor = conn.cursor()
-                dbcursor.execute("INSERT INTO failed_orders(order_id,error,status,created_date_time) VALUES('"+currentZipFileName+"','"+res['msg']+"','F','"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"')")
+                dbcursor.execute("SELECT COUNT(*) FROM failed_orders WHERE order_id = %s", (currentZipFileName,))
+                count = dbcursor.fetchone()[0]
+                if count > 0:
+                    dbcursor.execute("UPDATE failed_orders SET tag_list = %s, error = %s, status = %s, created_date_time = %s WHERE order_id = %s", 
+                                     (",".join(assestLists), res['msg'], 'F', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), currentZipFileName))
+                else:
+                    dbcursor.execute("INSERT INTO failed_orders(order_id, tag_list, error, status, created_date_time) VALUES(%s, %s, %s, %s, %s)", 
+                                     (currentZipFileName, ",".join(assestLists), res['msg'], 'F', datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 conn.commit()
 
             dbcursor.execute("UPDATE orders SET approval_mail_status = %s WHERE id = %s", (approval_mail_status, order_ins_id))
@@ -607,9 +652,16 @@ def genProcess(processName='',zipFile=''):
         shutil.move(orderProcessing+'/'+baseNameOfZip+'.zip', failedOrders+'/'+baseNameOfZip+'.zip')  
         delete_folder_and_files(currentZipOutputDir)
         dbcursor = conn.cursor()
-        dbcursor.execute("INSERT INTO failed_orders(order_id,error,status,created_date_time) VALUES('"+currentZipFileName+"','"+str(format(error)).replace("'",'"').strip()+"','F','"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"')")
+        dbcursor.execute("SELECT COUNT(*) FROM failed_orders WHERE order_id = %s" (currentZipFileName))
+        count = dbcursor.fetchone()[0]
+        if count > 0:
+            dbcursor.execute("UPDATE failed_orders SET tag_list = %s, error = %s, status = %s, created_date_time = %s WHERE order_id = %s", 
+                     (assetName, str(format(error)).replace("'", '"').strip(), 'F', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), currentZipFileName))
+        else:
+            dbcursor.execute("INSERT INTO failed_orders(order_id, tag_list, error, status, created_date_time) VALUES(%s, %s, %s, %s, %s)", 
+                     (currentZipFileName, assetName, str(format(error)).replace("'", '"').strip(), 'F', datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         conn.commit()
-
+            
 def reduce_pdf_quality(input_pdf, output_pdf, dpi=100, quality=90):
     images = convert_from_path(input_pdf, dpi=dpi)  # Convert to images
 
@@ -622,7 +674,6 @@ def reduce_pdf_quality(input_pdf, output_pdf, dpi=100, quality=90):
         pdf.image("temp.jpg", x=0, y=0, w=297, h=420)  # A3 width
 
     pdf.output(output_pdf, "F")
-
 
 def add_background_to_svg(svg_path, background_image_path, angle=45, opacity=0.2):
     tree = ET.parse(svg_path)
@@ -650,8 +701,6 @@ def add_background_to_svg(svg_path, background_image_path, angle=45, opacity=0.2
     # Save the modified SVG
     tree.write(svg_path, encoding='utf-8', xml_declaration=True)
 
-
-
 def set_svg_text(svg_root, element_id, text_value):
     elements = svg_root.findall(f".//*[@id='{element_id}']")
 
@@ -668,7 +717,6 @@ def set_svg_text(svg_root, element_id, text_value):
     else:
         if element_id not in mandatoryIds:
             return False
-        print(f"ID '{element_id}' not found in SVG.")
 
 def get_rects_as_string(file_path):   
     tree = ET.parse(file_path)
@@ -692,6 +740,9 @@ def set_barcode(x, y, width, data, root):
     x = float(x)      
     x = x - 10.5
     y = float(y)
+    if width == '' or width is None:
+        print("Ean 13 barcode width is not given")
+        return
     width = float(width)  
     width = width+1
     default_array = {
@@ -719,13 +770,8 @@ def set_barcode(x, y, width, data, root):
     if not bars_content:
         print("Error: No bars content")
         return {"error": "No bars content", "status_code": 400}
-
-    # svgPath = svgfile
-   
     try:
-        bars_content = f'<svg xmlns="http://www.w3.org/2000/svg">{bars_content}</svg>'
-        # tree = ET.parse(svgPath)
-        # root = tree.getroot()      
+        bars_content = f'<svg xmlns="http://www.w3.org/2000/svg">{bars_content}</svg>' 
         namespaces = {'ns0': 'http://www.w3.org/2000/svg'}       
         bars_element = ET.fromstring(bars_content)     
         barcodeArea = root.find(".//*[@id='Barcode']", namespaces)
@@ -744,8 +790,6 @@ def set_barcode(x, y, width, data, root):
             print("No <rect> element found with id='barcode'.")
             return {"error": "No <rect> element found with id='barcode'.", "status_code": 404}
 
-        # Write the modified SVG back to the file
-        # tree.write(svgPath, encoding='utf-8', xml_declaration=True)
         return {"message": "SVG updated successfully"}
 
     except ET.ParseError as e:
@@ -792,26 +836,47 @@ def size_append(root, size_ranges, selected_size, variable_size_text_style, vari
     base_alpha_element_width = 8  
     element_height = 10
     vertical_spacing = 2
-    horizontal_spacing = 7.5
+    horizontal_spacing = 8.5
     size_count = len(size_ranges)
     all_alphabetic = all(label[0].isalpha() for label in size_ranges)  
-    if size_count <= 5:
-        columns = size_count
-    elif size_count == 6 and all_alphabetic:
-        columns = 6  
-    elif size_count == 6:
-        columns = 4
-    elif size_count == 7:
-        columns = 4
-    elif size_count == 8:
-        columns = 5
-    elif size_count == 9:
-        columns = 5
+    if rect_width <=85:
+        if not all_alphabetic:
+            horizontal_spacing = 9
+            base_element_width = 14
+                    
+        
+        if size_count <= 4:
+            columns = size_count
+        elif size_count == 5 and all_alphabetic:
+            columns = 5  
+        elif size_count == 5:
+            columns = 3
+        elif size_count == 6:
+            columns = 3
+        elif size_count in [7, 8, 9]:
+            columns = 4
+        else:
+            columns = 4  
     else:
-        columns = 5  
-
+        if size_count <= 5:
+            columns = size_count
+        elif size_count == 6 and all_alphabetic:
+            columns = 6  
+        elif size_count == 6:
+            columns = 4
+        elif size_count in [7, 8, 9]:
+            columns = 5
+        else:
+            columns = 5  
+    
     rows = (size_count + columns - 1) // columns
+    total_height = rows * element_height + (rows - 1) * vertical_spacing
+    
 
+    if columns <= 5:
+        row_start_y = rect_y + (rect_height - total_height) / 2  
+    else:
+        row_start_y = rect_y + 1 
     for row in range(rows):
         elements_in_row = min(columns, len(size_ranges) - row * columns)
         total_row_width = 0
@@ -820,10 +885,18 @@ def size_append(root, size_ranges, selected_size, variable_size_text_style, vari
             index = row * columns + col
             label = size_ranges[index]
             element_width = base_alpha_element_width if label[0].isalpha() else base_element_width
+            if label in ["XXL", "XXXL"]:
+                element_width *= 1.5
             size_widths.append(element_width)
             total_row_width += element_width
         total_row_width += (elements_in_row - 1) * horizontal_spacing
-        start_x = usable_start_x + (usable_width - total_row_width) / 2  
+        total_elements_width = sum(size_widths) + (elements_in_row - 1) * horizontal_spacing
+        
+        if columns <= 5:
+            
+            start_x = usable_start_x + (usable_width - total_elements_width) / 2  
+        else:
+            start_x = usable_start_x  
         
         for col in range(elements_in_row):
             index = row * columns + col
@@ -838,40 +911,34 @@ def size_append(root, size_ranges, selected_size, variable_size_text_style, vari
                 "rect",
                 {
                     "id": f"box_{label}",
-                    "x": str(rect_x - 3),
-                    "y": str(rect_y - 0.5),
-                    "width": str(element_width + 6),
+                    "x": str(rect_x - 3.5),
+                    "y": str(rect_y - 1),
+                    "width": str(element_width + 7),
                     "height": str(element_height),
                     "style": "display:inline" if label == selected_size else "display:none",
                 },
             )
             root.append(rect_element)
             style_box = f"{variable_size_box_style} display{':inline' if label == selected_size else ':none'} "
-            text_box_element = ET.Element(
-                "text",
-                {
-                    "id": f"variable_Size_box_{label}",
-                    "style":style_box, 
-                    "transform": f"translate({text_x} {text_y})",
-                    "text-anchor": "middle",
-                    "dominant-baseline": "middle",
-                },
-            )
+            text_box_element = ET.Element("text", {
+                "id": f"variable_Size_box_{label}",
+                "style": style_box,
+                "transform": f"translate({text_x} {text_y})",
+                "text-anchor": "middle",
+                "dominant-baseline": "middle",
+            })
             tspan_box_element = ET.SubElement(text_box_element, "tspan", {"x": "0", "y": "0"})
             tspan_box_element.text = label
           
             root.append(text_box_element)
             style_text = f"{variable_size_text_style} display{':none' if label == selected_size else ':inline'} "
-            text_element = ET.Element(
-                "text",
-                {
-                    "id": f"variable_Size_{label}",
-                    "style": style_text,
-                    "transform": f"translate({text_x} {text_y})",
-                    "text-anchor": "middle",
-                    "dominant-baseline": "middle",
-                },
-            )
+            text_element = ET.Element("text", {
+                "id": f"variable_Size_{label}",
+                "style": style_text,
+                "transform": f"translate({text_x} {text_y})",
+                "text-anchor": "middle",
+                "dominant-baseline": "middle",
+            })
             tspan_element = ET.SubElement(text_element, "tspan", {"x": "0", "y": "0"})
             tspan_element.text = label
             root.append(text_element)
@@ -955,12 +1022,15 @@ def get_size_position(root):
     if variable_size_box_element is not None:
         y_position, style_attr = extract_transform_and_style(variable_size_box_element)
         size_positions['variable_size_box'] = {'y_position': y_position, 'style': style_attr}
-
+    variable_size_box_path_element = root.find(".//" + SVG_NS + "path[@id='size_path']")
+    if variable_size_box_path_element is not None:
+        y_position, style_attr = extract_transform_and_style(variable_size_box_path_element)
+        size_positions['variable_size_box_path'] = {'y_position': y_position, 'style': style_attr}
     return size_positions
 
 # selling price and currency value updated in svg
 def selling_price_append(root, currency_symbol,selling_price,selling_price_fraction_part,currency_y_position, selling_price_y_position, currency_style, selling_price_fraction_style,selling_price_style):
-    if selling_price == "0":
+    if selling_price == 0:
         return      
     SVG_NS = "http://www.w3.org/2000/svg"
     ET.register_namespace("", SVG_NS)
@@ -1052,4 +1122,276 @@ def set_apperal_category(root,  selected_id):
     else:
         print(f"No text element found with ID '{selected_id}'.")
 
-# genProcess('customer_order_approval','B0608787')
+def extract_sizes_from_xml_selected_tag(xmlroot):
+   
+    root = xmlroot
+
+    name_attributes = ['IT', 'INT', 'EU', 'FR', 'USA / UK']
+    sizes_dict = {}
+
+    for name_attr in name_attributes:
+        size_values = []
+        for size in root.findall(f".//SizeChartItem/Size[@Name='{name_attr}']"):
+            size_value = size.get("Value")
+            if size_value and size_value not in size_values:
+                size_values.append(size_value)
+        sizes_dict[name_attr] = sorted(size_values)
+
+    max_length = max((len(v) for v in sizes_dict.values()), default=0)
+
+    table_array = []
+    table_array.append(name_attributes)
+
+    for i in range(max_length):
+        row = [sizes_dict[key][i] if i < len(sizes_dict[key]) else "" for key in name_attributes]
+        table_array.append(row)
+
+    return table_array
+
+def extract_sizes_from_xml_all_tag(XMLRoot):
+        name_attributes=['ITA','ANNI-YEARS','MESI-MONTHS','YEARS','MONTHS','IT'] 
+        sizes = []
+        selected_size=''
+        
+        for name_attr in name_attributes:
+            for size in XMLRoot.findall(f".//SizeChartItem/Size[@Name='{name_attr}']"):
+                size_value = size.get("Value")
+                if size_value and size_value not in sizes:
+                        sizes.append(size_value)
+        return sizes
+def add_text_boxes_to_svg(root, size_array, selected_size, selected_size_style, unselected_size_style):
+    
+    SVG_NS = "http://www.w3.org/2000/svg"
+    ET.register_namespace("", SVG_NS)
+
+    rect = root.find(".//*[@id='size_rect_selected']")
+    if rect is None:
+        print("Error: Rectangle with id 'size_rect' not found.")
+        return
+
+    rect_x = float(rect.attrib['x'])
+    rect_y = float(rect.attrib['y'])
+    rect_width = float(rect.attrib['width']) - 10
+    rect_height = float(rect.attrib['height'])
+
+    x_start = rect_x + 12  
+    y_start = rect_y + 5 
+    y_offset = 9
+    num_columns = len(size_array[0])  
+
+    text_group = ET.Element('g', {'id': 'size_text_group'})
+    size_array = size_array[1:]
+
+    for i, row in enumerate(size_array):  
+        y_position = y_start + i * y_offset 
+        if y_position > rect_y + rect_height - y_offset:
+            break 
+
+        is_selected = selected_size in row  # Corrected condition
+
+        for j, value in enumerate(row):
+            x_position = x_start + j * (rect_width / num_columns)  
+            if j == num_columns - 1:
+                x_position += 3
+            if x_position > rect_x + rect_width:
+                break   
+
+            text_style = selected_size_style if is_selected else unselected_size_style          
+            text_id = f'size_{i}_{j}'
+
+            text_element = ET.Element('text', {
+                'id': text_id,
+                'transform': f'translate({x_position} {y_position})',               
+                'text-anchor': 'middle',
+                'style': text_style
+            })
+
+            tspan_element = ET.SubElement(text_element, 'tspan')
+            tspan_element.text = value         
+            text_group.append(text_element)
+
+    root.append(text_group)
+def set_code128_barcode(x, y, width, data, root):
+    if width == '' or width is None:
+        print("Ean 13 barcode width is not given")
+        return
+    generator = c128bc.BarcodeGenerator()
+    barcodeno = data       
+    x = float(x)      
+    x = x - 10.5
+    y = float(y)
+    width = float(width)  
+    width = width+1
+    default_array = {
+        "barcodeWidth": width,
+        "barcodeHeight": 23,
+        "color": 'cmyk(0,0,0,100)',
+        "x": x,
+        "y": y,
+        "showCode": False,
+        "inline": True,
+        "barWidthRatio": 0.7,
+        "quietZone": 10
+    }
+    svg_output = generator.getBarcodeSVG(barcodeno, "C128C", default_array)  
+    directory = "barcode_svg"
+    filename = f"{barcodeno}.svg"
+    file_path = os.path.join(directory, filename)
+    os.makedirs(directory, exist_ok=True)    
+    
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(svg_output)
+    bars_content = get_rects_as_string(file_path) 
+    bars_content = bars_content.strip()  
+
+    if not bars_content:
+        print("Error: No bars content")
+        return {"error": "No bars content", "status_code": 400}
+
+    try:
+        bars_content = f'<svg xmlns="http://www.w3.org/2000/svg">{bars_content}</svg>'
+        namespaces = {'ns0': 'http://www.w3.org/2000/svg'}       
+        bars_element = ET.fromstring(bars_content)     
+        barcodeArea = root.find(".//*[@id='Barcode_ean_128c']", namespaces)
+        barcodeArea.clear()
+        if barcodeArea is not None:         
+            for elem in bars_element.iter():
+                if '}' in elem.tag:
+                    elem.tag = f"{{http://www.w3.org/2000/svg}}{elem.tag.split('}')[1]}"
+                else:
+                    elem.tag = f"{{http://www.w3.org/2000/svg}}{elem.tag}"
+            barcodeArea.append(bars_element)
+        else:
+            print("No <rect> element found with id='barcode'.")
+            return {"error": "No <rect> element found with id='barcode'.", "status_code": 404}
+        return {"message": "SVG updated successfully"}
+
+    except ET.ParseError as e:
+        print( f"SVG parsing error: {str(e)}")
+        return {"error": f"SVG parsing error: {str(e)}", "status_code": 500}
+    finally:
+               
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"Temporary file {file_path} deleted.")
+
+
+def size_append_circle(root,elementid,size_ranges, selected_size, variable_size_text_style, variable_size_box_style,variable_size_box_path_style):
+   
+    SVG_NS = "http://www.w3.org/2000/svg"
+    ET.register_namespace("", SVG_NS) 
+    rect_element = root.find(f".//*[@id='{elementid}']")
+    if rect_element is None:
+        raise ValueError(f"Rectangle with id '{elementid}' not found.")
+    rect_x = float(rect_element.attrib["x"])
+    rect_y = float(rect_element.attrib["y"])
+    rect_width = float(rect_element.attrib["width"])
+    rect_height = float(rect_element.attrib["height"])
+    padding = 0
+    usable_width = rect_width - 2 * padding
+    usable_start_x = rect_x + padding
+    row_start_y = rect_y + 1
+    base_element_width = 10 
+    base_alpha_element_width =9
+    element_height = 10
+    vertical_spacing = 2
+    horizontal_spacing = 1.5
+    size_count = len(size_ranges)
+    all_alphabetic = all(label[0].isalpha() for label in size_ranges)  
+    if size_count <= 5:
+        columns = size_count
+    elif size_count == 6 and all_alphabetic:
+        columns = 6  
+    elif size_count == 6:
+        columns = 4
+    elif size_count == 7:
+        columns = 4
+    elif size_count == 8:
+        columns = 5
+    elif size_count == 9:
+        columns = 5
+    else:
+        columns = 5  
+
+    rows = (size_count + columns - 1) // columns
+
+    for row in range(rows):
+        elements_in_row = min(columns, len(size_ranges) - row * columns)
+        total_row_width = 0
+        size_widths = []     
+        for col in range(elements_in_row):
+            index = row * columns + col
+            label = size_ranges[index]
+           
+            element_width = base_alpha_element_width if label[0].isalpha() else base_element_width
+            size_widths.append(element_width)
+            total_row_width += element_width
+        total_row_width += (elements_in_row - 1) * horizontal_spacing
+        start_x = usable_start_x + (usable_width - total_row_width) / 2  
+        
+        for col in range(elements_in_row):
+            index = row * columns + col
+            label = size_ranges[index]
+            element_width = base_alpha_element_width if label[0].isalpha() else base_element_width
+            if label in ["XXL", "XXXL"]:
+                element_width *= 2
+            center_x = start_x + sum(size_widths[:col]) + col * horizontal_spacing + element_width / 2
+            center_y = row_start_y + row * (element_height + vertical_spacing) + element_height / 2
+            
+            circle_style = f"{variable_size_box_path_style} display{':inline' if label == selected_size else ':none'} "
+            if label in ["XXL", "XXXL"]:
+                shape_element = ET.Element(
+                    "ellipse",
+                    {
+                        "id": f"box_{label}",
+                        "cx": str(center_x),
+                        "cy": str(center_y-0.5),
+                        "rx": str(element_width / 2),
+                        "ry": str(element_height / 1.7),
+                        "style": circle_style,
+                    },
+                )
+            else:
+                shape_element = ET.Element(
+                    "circle",
+                    {
+                        "id": f"box_{label}",
+                        "cx": str(center_x),
+                        "cy": str(center_y-0.5),
+                        "r": str(element_width / 2),
+                        "style": circle_style,
+                    },
+                )
+            root.append(shape_element)
+            
+            style_box = f"{variable_size_box_style} display{':inline' if label == selected_size else ':none'} "
+            text_box_element = ET.Element(
+                "text",
+                {
+                    "id": f"variable_Size_box_{label}",
+                    "style": style_box, 
+                    "transform": f"translate({center_x} {center_y})",
+                    "text-anchor": "middle",
+                    "dominant-baseline": "middle",
+                },
+            )
+            tspan_box_element = ET.SubElement(text_box_element, "tspan", {"x": "0", "y": "0"})
+            tspan_box_element.text = label
+            root.append(text_box_element)
+            
+            style_text = f"{variable_size_text_style} display{':none' if label == selected_size else ':inline'} "
+            text_element = ET.Element(
+                "text",
+                {
+                    "id": f"variable_Size_{label}",
+                    "style": style_text,
+                    "transform": f"translate({center_x} {center_y})",
+                    "text-anchor": "middle",
+                    "dominant-baseline": "middle",
+                },
+            )
+            tspan_element = ET.SubElement(text_element, "tspan", {"x": "0", "y": "0"})
+            tspan_element.text = label
+            root.append(text_element)
+            
+# genProcess('customer_order_approval','B0364929')

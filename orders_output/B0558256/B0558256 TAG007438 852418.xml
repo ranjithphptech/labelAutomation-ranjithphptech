@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Order xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OrderStatus>Unconfirmed</OrderStatus>
+  <SubStatus />
+  <ArtworkRequired>False</ArtworkRequired>
+  <ArtworkStatus />
+  <Site>ovs.bgpconnect.com</Site>
+  <OrderID>B0558256</OrderID>
+  <OrderLink>https://ovs.bgpconnect.com/Order?orderId=558256</OrderLink>
+  <CustomerID>1583</CustomerID>
+  <CustomerName>AKR INDUSTRIES PRIVATE LIMITED</CustomerName>
+  <CustomerEmail>jegadish@akrind.com</CustomerEmail>
+  <CreatedDate>07/11/2024 07:46</CreatedDate>
+  <CustomerRef>251TSH091-6155/BLU KIDS HANGER/B0545145</CustomerRef>
+  <RequiredDate />
+  <OrderedFromLocationID>india</OrderedFromLocationID>
+  <OrderedFromLocation>Sainmarks Industries India Private Ltd</OrderedFromLocation>
+  <OrderItems>
+    <OrderItem>
+      <OrderItemID>852418</OrderItemID>
+      <PurchaseOrder>
+        <Reference />
+      </PurchaseOrder>
+      <Asset Id="12635">
+        <Name>2AH31</Name>
+        <Description>BLUKIDS HANGER-2AH31-310X213 MM</Description>
+        <Codes>
+          <Code Name="BPC" Value="TAG007438" />
+        </Codes>
+        <ProductTypes>
+          <ProductType Domain="Retailer">Packaging</ProductType>
+          <ProductType Domain="Britannia">Printed Packaging</ProductType>
+        </ProductTypes>
+      </Asset>
+      <Item>
+        <ItemID>6521396</ItemID>
+        <Quantity>1</Quantity>
+        <SizeChartItem Id="0" />
+        <Variables>
+          <Variable Section="Var" AnswerType="Lookup List" LookupListType="Variable" QuestionID="11145021" Question="Country">
+            <Answer>
+              <AnswerID />
+              <AnswerValues>
+                <AnswerValue Name=""></AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations>
+                <Translation Language="En" Value="" />
+              </AnswerTranslations>
+            </Answer>
+          </Variable>
+          <Variable Section="Var" AnswerType="Text" QuestionID="11172065" Question="Supplier Style">
+            <Answer>
+              <AnswerID />
+              <AnswerValues>
+                <AnswerValue Name=""></AnswerValue>
+              </AnswerValues>
+              <AnswerPrefix />
+              <AnswerSuffix />
+              <AnswerTranslations>
+                <Translation Language="En" Value="" />
+              </AnswerTranslations>
+            </Answer>
+          </Variable>
+        </Variables>
+      </Item>
+    </OrderItem>
+  </OrderItems>
+</Order>

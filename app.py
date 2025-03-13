@@ -66,14 +66,41 @@ def OrderUpload():
 
 @app.route("/Orderlist")
 def Orderlist():
-    # Create a cursor and execute a query to fetch all labels
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM orders")
-    labels = cursor.fetchall()  # Fetch all records from the query
-    cursor.close()
     
-    # Pass the fetched labels to the template
-    return render_template("order-list.html", labels=labels)
+    # Get the page number from the URL (default to 1)
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # Number of records per page
+    offset = (page - 1) * per_page
+    
+    # Create a cursor and execute a query to fetch total count of labels
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT COUNT(*) as total FROM orders")
+    total_orders = cursor.fetchone()['total']
+    
+    # Calculate total pages
+    total_pages = ceil(total_orders / per_page)    
+    # Query for the orders on the current page
+    query = "SELECT o.*,fo.status failed_status,fo.error,fo.created_date_time as failed_datetime FROM orders o LEFT JOIN failed_orders fo ON fo.order_id=o.order_id LIMIT %s OFFSET %s"
+    
+    cursor.execute(query, (per_page, offset))
+    orders = cursor.fetchall()
+    cursor.close()
+    for order in orders:
+        if order['approval_mail_status']=='F':
+            if order['status']=='CAP':
+               order['status'] = "Failed"
+        elif order['approval_mail_status']=='S':
+            if order['status']=='CAP':
+                order['status'] = "Approval Pending"
+            elif order['status']=='CAA':
+                order['status'] = "Approved"
+        if order['created_date_time']:
+            order['created_date_time'] = order['created_date_time'].strftime("%d-%m-%Y %H:%M:%S")
+            
+        if order['failed_datetime']:
+            order['failed_datetime'] = order['failed_datetime'].strftime("%d-%m-%Y %H:%M:%S")
+    
+    return render_template("order-list.html", orders=orders,total_pages=total_pages, page=page)
 
 @app.route("/TagUpload")
 def TagUpload():
@@ -81,9 +108,10 @@ def TagUpload():
 
 @app.route("/Taglist")
 def Taglist():
-    # Get the current page number from the query string (defaults to 1)
+   # Get the page number from the URL (default to 1)
     page = request.args.get('page', 1, type=int)
-    per_page = 10  # Number of items per page
+    per_page = 5  # Number of records per page
+    offset = (page - 1) * per_page
     
     # Create a cursor and execute a query to fetch total count of labels
     cursor = mysql.connection.cursor()
@@ -94,12 +122,12 @@ def Taglist():
     total_pages = ceil(total_labels / per_page)
     
     # Query for the labels on the current page
-    offset = (page - 1) * per_page
     cursor.execute("SELECT * FROM label_list LIMIT %s OFFSET %s", (per_page, offset))
     labels = cursor.fetchall()
     
     # Modify the result as needed
     for label in labels:
+        
         frontLabel = label['label_name'].replace('.svg', '_FRONT.svg')
         frontLabelPath = os.path.join(STATIC_FOLDER, frontLabel)
         if not os.path.exists(frontLabelPath):
@@ -115,7 +143,7 @@ def Taglist():
     
     cursor.close()
     
-    return render_template("tag-list.html", labels=labels, total_pages=total_pages, current_page=page)
+    return render_template("tag-list.html", labels=labels, total_pages=total_pages, page=page)
 
 @app.route("/saveOrder", methods=['POST'])
 def saveOrder():
@@ -138,46 +166,44 @@ def saveOrder():
             flash("Only .zip files are allowed.")
             return redirect("/OrderUpload")
 
-@app.route("/saveSvg", methods=['POST'])
-def saveSvg():
+@app.route("/saveTag", methods=['POST'])
+def saveTag():
     if request.method == 'POST':
+        design_code = request.form.get('design_code', None).replace("  ", " ").upper()
+        product_code = request.form.get('product_code', None).replace("  ", " ").upper()
+
         # Define the directory to save SVG files
         svgDir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static', 'svg'))
         dynamic = request.form.get('dynamic_label', 0)
         
         # Handle the uploaded SVG files
-        if request.files['svgFile']:
-            svgFile = request.files['svgFile']
-            labelName = os.path.splitext(svgFile.filename)[0].upper()
-            saveLabelName = labelName
-            if "_FRONT" not in labelName:
-                saveLabelName += "_FRONT"            
-            saveLabelName =  saveLabelName + ".svg"
-            
-            svgFile.save(os.path.join(svgDir, saveLabelName))
+        if request.files['svgFile_frontside']:
+            svgFile_frontside = request.files['svgFile_frontside']            
+            saveLabelName =  design_code+"_"+product_code+"_FRONT.svg"
+            svgFile_frontside.save(os.path.join(svgDir, saveLabelName))
         
         # Check if dynamic label checkbox is checked
         if request.files['svgFile_backside']:
-            dynamic = 1
             svgFile_backside = request.files['svgFile_backside']
             back_side_labelName = os.path.splitext(svgFile_backside.filename)[0].upper()
-            saveLabelName = back_side_labelName
-            if "_BACK" not in back_side_labelName:
-                saveLabelName += "_BACK"
+            saveLabelName = back_side_labelName.upper()
             
-            saveLabelName =  saveLabelName + ".svg"
+            saveLabelName = design_code+"_"+product_code+"_BACK.svg"
             svgFile_backside.save(os.path.join(svgDir, saveLabelName))
 
-        labelName = saveLabelName.replace("_FRONT", "").replace("_BACK", "")
+        labelName = (design_code+"_"+product_code).replace("_FRONT", "").replace("_BACK", "")+".svg"
+        design_code = design_code.replace("_FRONT", "").replace("_BACK", "")
         # Save label details in the database
         cursor = mysql.connection.cursor()        
-        cursor.execute("SELECT * FROM label_list WHERE label_name = %s", (labelName,))
+        query = "SELECT * FROM label_list WHERE design_code = %s AND product_code=%s"
+        params = (design_code, product_code)        
+        cursor.execute(query, params)
         data = cursor.fetchone()
-
+        
         if data is None:
-            cursor.execute("INSERT INTO label_list (label_name, dynamic) VALUES (%s, %s)", (labelName, dynamic))
+            cursor.execute("INSERT INTO label_list (design_code,label_name, product_code, dynamic) VALUES (%s,%s,%s,%s)", (design_code, labelName, product_code, dynamic))
         else:
-            cursor.execute("UPDATE label_list SET label_name=%s, dynamic=%s WHERE id=%s", (labelName, dynamic, data['id']))
+            cursor.execute("UPDATE label_list SET design_code=%s,label_name=%s,product_code=%s,dynamic=%s WHERE id=%s", (design_code, labelName, product_code, dynamic, data['id']))
 
         mysql.connection.commit()       
         cursor.close()
@@ -185,74 +211,10 @@ def saveSvg():
         flash("The label has been saved successfully!")
         return redirect("/TagUpload")  
 
-# @app.route("/saveSvg", methods=['POST'])
-# def saveSvg():
-#     if request.method == 'POST':
-#         # Define the directory to save SVG files
-#         svgDir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static', 'svg'))
-#         dynamic = 0
-        
-#         if 'dynamic_label' in request.form:
-#             dynamic = 1
-        
-#         label_frontside = request.files['label_frontside']
-#         frontside_lable_name = os.path.splitext(label_frontside.filename)[0].upper()
-        
-#         if "_FRONT" not in frontside_lable_name and "_front" not in frontside_lable_name:
-#             frontside_lable_name += "_FRONT"
-            
-#         frontside_lable_name +=".svg"
-        
-#         label_frontside.save(os.path.join(svgDir, frontside_lable_name))
-        
-#         cursor = mysql.connection.cursor()        
-#         cursor.execute("SELECT * FROM label_list WHERE label_name = %s", (frontside_lable_name,))
-#         data = cursor.fetchone()
-
-#         if data is None:
-#             cursor.execute("INSERT INTO label_list (label_name, dynamic) VALUES (%s, %s)", (frontside_lable_name, dynamic))
-#         else:
-#             cursor.execute("UPDATE label_list SET label_name=%s, dynamic=%s WHERE id=%s", (frontside_lable_name, dynamic, data['id']))
-                
-#         mysql.connection.commit()       
-#         cursor.close()
-        
-#         # Check if dynamic label checkbox is checked
-#         if 'dynamic_label' in request.form:
-#             label_backside = request.files['label_backside']
-#             back_side_label_name = os.path.splitext(label_backside.filename)[0].upper()
-        
-#             if "_BACK" not in back_side_label_name and "_back" not in back_side_label_name:
-#                 back_side_label_name += "_BACK"
-                
-#             back_side_label_name +=".svg"
-            
-#             label_backside.save(os.path.join(svgDir, back_side_label_name))
-            
-#             cursor = mysql.connection.cursor()        
-#             cursor.execute("SELECT * FROM label_list WHERE label_name = %s", (back_side_label_name,))
-#             data = cursor.fetchone()
-
-#             if data is None:
-#                 cursor.execute("INSERT INTO label_list (label_name, dynamic) VALUES (%s, %s)", (back_side_label_name, dynamic))
-#             else:
-#                 cursor.execute("UPDATE label_list SET label_name=%s, dynamic=%s WHERE id=%s", (back_side_label_name, dynamic, data['id']))
-                
-#             mysql.connection.commit()       
-#             cursor.close()
-            
-        
-#         flash("The label has been saved successfully!")
-#         return redirect("/TagUpload")  
-
 @app.route('/logout', methods=['GET'])
 def logout():
     session.clear()
     return redirect("/login")
 
-@app.route("/test")
-def test():
-    return "The app is working!"
-
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0', port=9000)
+    app.run(debug=True,host='0.0.0.0', port=8000,ssl_context=('cert.pem', 'key.pem'))
