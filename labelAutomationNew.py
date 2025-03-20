@@ -26,20 +26,41 @@ def genProcess(processName='',zipFile=''):
     orderProcessing = config['paths']['orderProcessing']
     orderOutputDir = config['paths']['orderOutputDir']
     svgDir = os.path.join('static',config['paths']['svgDir'])
-    customerApprovalPending = config['paths']['customerApprovalPending']
+    customerApprovalPending =  config['paths']['customerApprovalPending']
     failedOrders = config['paths']['failedOrders']
+   
+    if not os.path.exists(os.path.join(orderProcessing,zipFile)):
+        if os.path.exists(os.path.join(failedOrders,zipFile)):
+            shutil.move(os.path.join(failedOrders,zipFile),orderProcessing)
+        if os.path.exists(os.path.join(customerApprovalPending,zipFile)):
+            shutil.move(os.path.join(customerApprovalPending,zipFile),orderProcessing)
+        
     currentZipFileName = baseNameOfZip
     currentZipOutputDir = ""
     orderID,assetName,design_code,product_code= "","","",""
     try:
         f = os.path.join(orderProcessing,zipFile)
         ordersData = {}
+        
         with ZipFile(f,'r') as zObject:
             assestLists =[]
             currentZipOutputDir = orderOutputDir+"/"+baseNameOfZip
             Path(currentZipOutputDir).mkdir(parents=True, exist_ok=True)
             zObject.extractall(currentZipOutputDir)
-          
+            dbcursor = conn.cursor()
+            query = f"SELECT * FROM orders WHERE order_id = '{currentZipFileName}'"
+            dbcursor.execute(query)
+            order = dbcursor.fetchone()
+            
+            if order is not None and len(order) > 0:
+                query = f"UPDATE orders SET status='PRC', created_date_time='{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}' WHERE order_id='{currentZipFileName}'"
+                order_ins_id = order[0]
+            else:
+                query = f"INSERT INTO orders(order_id, status, created_date_time) VALUES('{currentZipFileName}', 'PRC', '{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}')"
+                dbcursor.execute(query)
+                order_ins_id = dbcursor.lastrowid
+            conn.commit()
+            
             for xmlFile in sorted(Path(currentZipOutputDir).rglob('*.xml')):
                 latexSvgFiles = ""
                 XMLDir = os.path.splitext(xmlFile)[0].replace(" ","_")
@@ -51,17 +72,20 @@ def genProcess(processName='',zipFile=''):
                 XMLtree = ET.parse(xmlFile)
                 XMLRoot = XMLtree.getroot()                    
                
-                assetNameList = XMLRoot.find("./OrderItems/OrderItem/Asset/Name").text.split(",")
+                assetNameList = XMLRoot.find("./OrderItems/OrderItem/Asset/Name").text
+                assetNames = assetNameList.split(",")
                 product_code = XMLRoot.find("./OrderItems/OrderItem/Asset/Codes/Code").attrib['Value']
                 
-                assestLists.append(assetNameList[0])
-                if len(assetNameList)==2:
-                    assetName = assetNameList[1]
-                    assestLists.append(assetNameList[1])
+                assestLists.append(assetNames[0])
+                if len(assetNames)==2:
+                    assetName = assetNames[1]
+                    assestLists.append(assetNames[1])
                 else:
-                    assetName = assetNameList[0]
+                    assetName = assetNames[0]
 
                 design_code = assetName
+                dbcursor.execute("UPDATE orders SET tag_list = %s WHERE order_id = %s", (assetNameList, currentZipFileName))
+                conn.commit()
                 assetName += "_"+product_code.strip() 
           
                 dbcursor = conn.cursor(dictionary=True)
@@ -352,7 +376,7 @@ def genProcess(processName='',zipFile=''):
                         tagGroups.setdefault(country, {}).setdefault(color, {}).setdefault(supplierStype, {}).setdefault('tagList',[]).append(outPutSvgName)
                         
                         if barcodenumber !='':
-                            set_barcode(labelDet['barcode_x_position'],labelDet['barcode_y_position'],labelDet['barcode_width'],barcodenumber,SVGroot)
+                            set_barcode(labelDet['barcode_x_position'],labelDet['barcode_y_position'],labelDet['ean13_barcode_width'],barcodenumber,SVGroot)
                             
                         if code128_barcode !='':
                             set_code128_barcode(labelDet['code128_barcode_x_position'],labelDet['code128_barcode_y_position'],labelDet['code128_barcode_width'],code128_barcode,SVGroot)
@@ -413,7 +437,9 @@ def genProcess(processName='',zipFile=''):
                         frontSvgBaseName = os.path.splitext(frontSvgName)[0]
                         width, height = get_svg_dimensions(frontSvgFilePath)
                         latexSvgFilesCode =f'\\includesvg[inkscapearea=page, width={width:.2f}mm, height={height:.2f}mm]{{{frontSvgBaseName}}} \n' 
-                                
+                        latexSvgFilesCode += '\\vspace{2mm}  \n'  
+                        latexSvgFilesCode += '\\hspace{6mm}  \n' 
+                                          
                     font_families = extract_font_families_from_style(currentSvgFilePath)
                     print (f"font Familes : {font_families}")
                     width, height = get_svg_dimensions(currentSvgFilePath)
@@ -424,7 +450,6 @@ def genProcess(processName='',zipFile=''):
                     if isPDFOutputDir==False:
                         Path(currentZipOutputDir+'/pdf').mkdir(parents=True, exist_ok=True)
 
-                    title = supplierStype+" - "+country+" - "+color+" - "+orderID
                     buyerTxt         = '               OVS'
                     
                     pdfFileName = (assetName+"_"+baseNameOfZip).replace(" ","_")
@@ -442,10 +467,7 @@ def genProcess(processName='',zipFile=''):
                         for color, supplierGroups in colorGroups.items():
                             for supplierStyle, tagData in supplierGroups.items():                
                                 tagList = tagData.get('tagList', [])
-                                if color !='':
-                                        title = supplierStyle+" - "+country+" - "+color+" - "+orderID   
-                                else:
-                                    title = supplierStyle+" - "+country+" - "+orderID 
+                                title = " - ".join(filter(None, [supplierStyle, country, color, orderID]))
                                 pdfPageBody += r'''\renewcommand{\arraystretch}{1.5}
                         \begin{table}[h]
                         \centering
@@ -453,11 +475,11 @@ def genProcess(processName='',zipFile=''):
                             \hline
                            \multirow{6}{8cm}{ \centering \includegraphics[height=1.7cm,width=3.9cm]{Sainmarknewlogo} }   & BUYER : '''+buyerTxt+r''' & \multirow{6}{8cm}{\centering \makecell{ARTWORK \\ FOR\\ APPROVAL}} \\
                             \cline{2-2}
-                            & CUSTOMER : '''+customerName+r''' & \\
+                            & CUSTOMER : '''+customerName.replace("_","\\_").replace("&","\\&")+r''' & \\
                             \cline{2-2}
-                            & DESIGN CODE : '''+design_code.replace("_","\_").replace("&","\&")+r''' & \\
+                            & DESIGN CODE : '''+design_code.replace("_","\\_").replace("&","\\&")+r''' & \\
                             \cline{2-2}
-                            & PRODUCT CODE : '''+product_code.replace("_","\_").replace("&","\&")+r''' & \\
+                            & PRODUCT CODE : '''+product_code.replace("_","\\_").replace("&","\\&")+r''' & \\
                             \cline{2-2}
                             & SUBMITTED DATE : '''+submitted_date+r''' & \\
                             \cline{2-2}
@@ -465,6 +487,25 @@ def genProcess(processName='',zipFile=''):
                             \hline
                         \end{tabular}
                     \end{table}
+                         \afterpage{\begin{table}[h]
+                        \centering
+                           \begin{tabular}{|p{8cm}|p{11cm}|p{8cm}|} 
+                            \hline
+                           \multirow{6}{8cm}{ \centering \includegraphics[height=1.7cm,width=3.9cm]{Sainmarknewlogo} }   & BUYER : '''+buyerTxt+r''' & \multirow{6}{8cm}{\centering \makecell{ARTWORK \\ FOR\\ APPROVAL}} \\
+                            \cline{2-2}
+                            & CUSTOMER : '''+customerName.replace("_","\\_").replace("&","\\&")+r''' & \\
+                            \cline{2-2}
+                            & DESIGN CODE : '''+design_code.replace("_","\\_").replace("&","\\&")+r''' & \\
+                            \cline{2-2}
+                            & PRODUCT CODE : '''+product_code.replace("_","\\_").replace("&","\\&")+r''' & \\
+                            \cline{2-2}
+                            & SUBMITTED DATE : '''+submitted_date+r''' & \\
+                            \cline{2-2}
+                            &  & \\
+                            \hline
+                        \end{tabular}
+                    \end{table}
+                    }
                         \begin{center}
                         {\Large \textbf{\fontspec{Arial}\textcolor{red}{'''+title+r'''}}}
                         \end{center}
@@ -475,10 +516,9 @@ def genProcess(processName='',zipFile=''):
                                     svg_path = Path(currentZipOutputDir) / xmlFileBasename / tag
                                     baseNameSVG = os.path.splitext(tag)[0]
                                     width, height = get_svg_dimensions(svg_path)
-                                    print(title+"-"+baseNameSVG)
                                     latexSvgFilesCode +=f'\\includesvg[inkscapearea=page, width={width:.2f}mm, height={height:.2f}mm]{{{baseNameSVG}}} \n'   
-                                    latexSvgFilesCode += '\\vspace{10mm}  \n'  
-                                    latexSvgFilesCode += '\\hspace{10mm}  \n' 
+                                    latexSvgFilesCode += '\\vspace{2mm}  \n'  
+                                    latexSvgFilesCode += '\\hspace{6mm}  \n' 
                                 pdfPageBody += latexSvgFilesCode+"\n\\newpage"
                     
                     with open(latexFilePath,'w') as clatexFile:
@@ -490,11 +530,12 @@ def genProcess(processName='',zipFile=''):
                         \usepackage{xcolor}
                         \usepackage[inkscapelatex=false]{svg}
                         %\usepackage[a3paper,landscape,left=5mm,right=5mm,bottom=5mm]{geometry}
-                        \usepackage[b2paper,landscape,left=5mm,right=5mm,bottom=5mm]{geometry}
+                        \usepackage[b2paper,landscape,left=10mm,right=10mm,bottom=10mm]{geometry}
                         \setlength{\voffset}{-0.75in}
                         \setlength{\headsep}{5pt}
                         \usepackage{layout}
                         \usepackage{fontspec}
+                        \usepackage{afterpage}
                         \newcolumntype{Y}{>{\centering\arraybackslash}X}
                         \renewcommand{\arraystretch}{1.2}
                         \graphicspath{{'''+graphicspath+r'''}}
@@ -617,12 +658,14 @@ def genProcess(processName='',zipFile=''):
                 toemail = ordersData[order_id].get('customerEmail')
                 approval_mail_status = 'P'
                 submitted_date = str(datetime.now().strftime("%Y-%m-%d"))
+                
                 dbcursor = conn.cursor()
-                dbcursor.execute("INSERT INTO orders(order_id, buyer, customer_id,customer_name, customer_email_id,approval_mail_status, tag_list, submitted_date,status, created_date_time) VALUES('"+order_id+"', 'OVS','"+ordersData[order_id].get('customerID')+"', '"+ordersData[order_id].get('customerName')+"', '"+ordersData[order_id].get('customerEmail')+"','"+approval_mail_status+"', '"+(",".join(assestLists))+"', '"+submitted_date+"', 'CAP', '"+str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))+"');")
-                order_ins_id = dbcursor.lastrowid
+                dbcursor.execute("UPDATE orders SET buyer = %s, customer_id = %s, customer_name = %s, customer_email_id = %s, approval_mail_status = %s, submitted_date = %s, status = %s, created_date_time = %s WHERE order_id = %s", 
+                                 ('OVS', ordersData[order_id].get('customerID'), ordersData[order_id].get('customerName'), ordersData[order_id].get('customerEmail'), approval_mail_status, submitted_date, 'CAP', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), order_id))
                 conn.commit()
                                     
             res = send_mail(subject=baseNameOfZip,toMailid=toemail,attachmentPath=currentZipOutputDir+'/pdf')
+            
             if res['status']=='success':
                 approval_mail_status = 'S'
                 shutil.move(orderProcessing+'/'+baseNameOfZip+'.zip', customerApprovalPending+'/'+baseNameOfZip+'.zip')
@@ -630,18 +673,48 @@ def genProcess(processName='',zipFile=''):
                 approval_mail_status = 'F'
                 shutil.move(orderProcessing+'/'+baseNameOfZip+'.zip', failedOrders+'/'+baseNameOfZip+'.zip')
                 dbcursor = conn.cursor()
-                dbcursor.execute("SELECT COUNT(*) FROM failed_orders WHERE order_id = %s", (currentZipFileName,))
+                query = "SELECT COUNT(*) FROM failed_orders WHERE order_id = %s"
+                print(f"Executing query: {query} with data: {currentZipFileName}")
+                dbcursor.execute(query, (currentZipFileName,))
                 count = dbcursor.fetchone()[0]
-                if count > 0:
-                    dbcursor.execute("UPDATE failed_orders SET tag_list = %s, error = %s, status = %s, created_date_time = %s WHERE order_id = %s", 
-                                     (",".join(assestLists), res['msg'], 'F', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), currentZipFileName))
-                else:
-                    dbcursor.execute("INSERT INTO failed_orders(order_id, tag_list, error, status, created_date_time) VALUES(%s, %s, %s, %s, %s)", 
-                                     (currentZipFileName, ",".join(assestLists), res['msg'], 'F', datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-                conn.commit()
 
-            dbcursor.execute("UPDATE orders SET approval_mail_status = %s WHERE id = %s", (approval_mail_status, order_ins_id))
-            conn.commit()
+                if count > 0:
+                    update_query = """
+                    UPDATE failed_orders 
+                    SET tag_list = %s, error = %s, status = %s, created_date_time = %s 
+                    WHERE order_id = %s
+                    """
+                    update_values = (",".join(assestLists), res['msg'], 'F', datetime.now().strftime("%Y-%m-%d %H:%M:%S"), currentZipFileName)
+                    
+                    # formatted_update_query = update_query.replace("%s", "{}").format(*map(repr, update_values))
+                    # print("Executing Query:", formatted_update_query)
+
+                    dbcursor.execute(update_query, update_values)
+                else:
+                    insert_query = """
+                    INSERT INTO failed_orders(order_id, tag_list, error, status, created_date_time) 
+                    VALUES(%s, %s, %s, %s, %s)
+                    """
+                    insert_values = (currentZipFileName, ",".join(assestLists), res['msg'], 'F', datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                    
+                    # formatted_insert_query = insert_query.replace("%s", "{}").format(*map(repr, insert_values))
+                    # print("Executing Query:", formatted_insert_query)
+
+                    dbcursor.execute(insert_query, insert_values)
+                
+                print(approval_mail_status)
+                print(order_ins_id)
+                # Update approval_mail_status
+                update_order_query = "UPDATE orders SET approval_mail_status = %s WHERE id = %s"
+                update_order_values = (approval_mail_status, order_ins_id)
+
+                # formatted_update_order_query = update_order_query.replace("%s", "{}").format(*map(repr, update_order_values))
+                # print("Executing Query:", formatted_update_order_query)
+
+                dbcursor.execute(update_order_query, update_order_values)
+
+                # Commit transaction
+                conn.commit()
             
             delete_folder_and_files(currentZipOutputDir)
             delete_folder_contents_only('svg-inkscape')
@@ -652,7 +725,13 @@ def genProcess(processName='',zipFile=''):
         shutil.move(orderProcessing+'/'+baseNameOfZip+'.zip', failedOrders+'/'+baseNameOfZip+'.zip')  
         delete_folder_and_files(currentZipOutputDir)
         dbcursor = conn.cursor()
-        dbcursor.execute("SELECT COUNT(*) FROM failed_orders WHERE order_id = %s" (currentZipFileName))
+        print(f"Executing query: SELECT COUNT(*) FROM orders WHERE order_id = '{currentZipFileName}'")
+        dbcursor.execute("SELECT COUNT(*) FROM orders WHERE order_id = %s", (currentZipFileName,))
+        order_count = dbcursor.fetchone()[0]
+        if order_count > 0:
+            dbcursor.execute("UPDATE orders SET status = %s WHERE order_id = %s", ('F', currentZipFileName))
+            
+        dbcursor.execute("SELECT COUNT(*) FROM failed_orders WHERE order_id = %s", (currentZipFileName,))
         count = dbcursor.fetchone()[0]
         if count > 0:
             dbcursor.execute("UPDATE failed_orders SET tag_list = %s, error = %s, status = %s, created_date_time = %s WHERE order_id = %s", 
@@ -1394,4 +1473,4 @@ def size_append_circle(root,elementid,size_ranges, selected_size, variable_size_
             tspan_element.text = label
             root.append(text_element)
             
-# genProcess('customer_order_approval','B0364929')
+genProcess('customer_order_approval','B0608787')

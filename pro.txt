@@ -1,0 +1,312 @@
+avahi       1060  0.0  0.0   8668  3760 ?        Ss   09:54   0:01 avahi-daemon: running [RK-PC.local]
+avahi       1101  0.0  0.0   8476  1168 ?        S    09:54   0:00 avahi-daemon: chroot helper
+colord      3144  0.0  0.0 320212  7768 ?        Ssl  09:54   0:00 /usr/libexec/colord
+cups-br+    1906  0.0  0.1 268340 12848 ?        Ssl  09:54   0:00 /usr/sbin/cups-browsed
+epmd       17771  0.0  0.0   7160  3188 ?        Ss   10:46   0:00 /usr/bin/epmd -systemd
+gnome-r+    1064  0.0  0.1 365340 10916 ?        Ssl  09:54   0:00 /usr/libexec/gnome-remote-desktop-daemon --system
+kernoops    1468  0.0  0.0  12744  2044 ?        Ss   09:54   0:00 /usr/sbin/kerneloops --test
+kernoops    1471  0.0  0.0  12744  1968 ?        Ss   09:54   0:00 /usr/sbin/kerneloops
+message+    1061  0.0  0.0  12408  7172 ?        Ss   09:54   0:03 @dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+polkitd     1080  0.0  0.1 317344 11248 ?        Ssl  09:54   0:00 /usr/lib/polkit-1/polkitd --no-debug
+rabbitmq   17822  0.0  0.0   2688  1484 ?        Ss   10:46   0:00 erl_child_setup 32768
+rabbitmq   17845  0.0  0.0   2800  1708 ?        Ss   10:46   0:00 sh -s disksup
+rabbitmq   17847  0.0  0.0   2548  1240 ?        Ss   10:46   0:00 /usr/lib/erlang/lib/os_mon-2.10.1/priv/bin/memsup
+rabbitmq   17848  0.0  0.0   2680  1340 ?        Ss   10:46   0:00 /usr/lib/erlang/lib/os_mon-2.10.1/priv/bin/cpu_sup
+rabbitmq   17849  0.0  0.0   3652  1692 ?        Ss   10:46   0:00 /usr/lib/erlang/erts-15.2.3/bin/inet_gethost 4
+rabbitmq   17850  0.0  0.0   3652  1340 ?        S    10:46   0:00 /usr/lib/erlang/erts-15.2.3/bin/inet_gethost 4
+rabbitmq   17853  0.0  0.0   2800  1572 ?        Ss   10:46   0:00 /bin/sh -s rabbit_disk_monitor
+ranjith    17339  0.0  1.2 1217875456 99080 ?    Sl   10:45   0:01 /snap/code/185/usr/share/code/code --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --no-sandbox --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version
+ranjith    17357  0.0  0.9 1216099232 79896 ?    Ssl  10:45   0:02 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/ms-vscode-remote.remote-ssh-0.118.0/out/localServer.js {"serverId":1,"ipcHandlePath":"/run/user/1000/vscode-ssh-askpass-36810ba93d5072054ef9f2aee9841be0354c6591.sock","sshCommand":"ssh","sshArgs":["-v","-T","-D","45743","-o","ConnectTimeout=15","Artwork-Generation-UAT"],"serverDataFolderName":".vscode-server","dataFilePath":"/home/ranjith/.config/Code/User/globalStorage/ms-vscode-remote.remote-ssh/vscode-ssh-host-60c335fb-6609ac3d66f4eade5cf376d1cb76f13985724bcb-0.118.0-es/data.json"}
+ranjith    17365  0.0  0.1  12292  8404 ?        S    10:45   0:00 ssh -v -T -D 45743 -o ConnectTimeout=15 Artwork-Generation-UAT
+ranjith    17367  0.0  0.0   8432  5608 ?        S    10:45   0:00 /usr/bin/ssh-agent -D -a /run/user/1000/keyring/.ssh
+ranjith    17446  0.0  0.9 1216099232 75076 ?    Sl   10:45   0:00 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/formulahendry.auto-rename-tag-0.1.10/packages/server/dist/serverMain.js --node-ipc --clientProcessId=17323
+ranjith    17455  0.0  0.9 1216099232 74880 ?    Sl   10:45   0:00 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/ms-edgedevtools.vscode-edge-devtools-2.1.8/node_modules/vscode-webhint/dist/src/server.js /home/ranjith/.config/Code/User/globalStorage/ms-edgedevtools.vscode-edge-devtools Microsoft Edge Tools --node-ipc --clientProcessId=17323
+ranjith    24282  0.0  0.0  11264  5216 pts/6    Ss   10:52   0:00 bash
+ranjith    27914  0.0  1.3 1459777532 111556 ?   Sl   11:25   0:00 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=640 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=5506094624 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    30620  0.0  0.4  53164 39304 pts/0    S+   11:55   0:00 python3 app.py
+ranjith    30746  0.0  1.3 1461484156 105840 ?   Sl   11:56   0:00 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --extension-process --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=806 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=7373426440 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    30790  0.0  1.2 1461483164 102100 ?   Sl   11:56   0:00 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --extension-process --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=810 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=7374048741 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    31082  0.0  0.3 201896 31512 pts/0    S+   11:58   0:00 /home/ranjith/Art_work_automation/env/bin/python3 app.py
+ranjith    31853  0.0  0.8 1459760620 65776 ?    Sl   12:04   0:00 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=862 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=7824840681 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    31881  0.0  0.0  13876  4884 pts/6    R+   12:04   0:00 ps aux
+ranjith    31882  0.0  0.0  25968  3268 pts/6    S+   12:04   0:00 sort -nk 3
+ranjith     3727  0.0  0.1  21704  9148 ?        Ss   10:00   0:00 /usr/lib/systemd/systemd --user
+ranjith     3734  0.0  0.0  21456  1732 ?        S    10:00   0:00 (sd-pam)
+ranjith     3745  0.0  0.1 117544 10720 ?        S<sl 10:00   0:00 /usr/bin/pipewire
+ranjith     3746  0.0  0.0  97736  4440 ?        Ssl  10:00   0:00 /usr/bin/pipewire -c filter-chain.conf
+ranjith     3750  0.0  0.1 567520 15088 ?        S<sl 10:00   0:00 /usr/bin/wireplumber
+ranjith     3751  0.0  0.2 122784 17508 ?        S<sl 10:00   0:00 /usr/bin/pipewire-pulse
+ranjith     3760  0.0  0.0  11264  6200 ?        Ss   10:00   0:01 /usr/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+ranjith     3767  0.0  0.1 390340  8612 ?        SLsl 10:00   0:00 /usr/bin/gnome-keyring-daemon --foreground --components=pkcs11,secrets --control-directory=/run/user/1000/keyring
+ranjith     3790  0.0  0.0 685060  6864 ?        Ssl  10:00   0:00 /usr/libexec/xdg-document-portal
+ranjith     3806  0.0  0.0 309308  5700 ?        Ssl  10:00   0:00 /usr/libexec/xdg-permission-store
+ranjith     3837  0.0  0.0 235668  5640 tty2     Ssl+ 10:00   0:00 /usr/libexec/gdm-wayland-session env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome-session --session=ubuntu
+ranjith     3845  0.0  0.1 298208 11184 tty2     Sl+  10:00   0:00 /usr/libexec/gnome-session-binary --session=ubuntu
+ranjith     3922  0.0  0.0 162652  5856 ?        Ssl  10:00   0:00 /usr/libexec/gcr-ssh-agent --base-dir /run/user/1000/gcr
+ranjith     3923  0.0  0.0  91548  4964 ?        Ssl  10:00   0:00 /usr/libexec/gnome-session-ctl --monitor
+ranjith     3938  0.0  0.0 314284  7076 ?        Ssl  10:00   0:00 /usr/libexec/gvfsd
+ranjith     3949  0.0  0.0 459712  6372 ?        Sl   10:00   0:00 /usr/libexec/gvfsd-fuse /run/user/1000/gvfs -f
+ranjith     3956  0.0  0.1 520676 13136 ?        Ssl  10:00   0:00 /usr/libexec/gnome-session-binary --systemd-service --session=ubuntu
+ranjith     3982  0.0  0.0 383008  7272 ?        Sl   10:00   0:00 /usr/libexec/at-spi-bus-launcher --launch-immediately
+ranjith     3997  0.0  0.0   9608  4536 ?        S    10:00   0:00 /usr/bin/dbus-daemon --config-file=/usr/share/defaults/at-spi2/accessibility.conf --nofork --print-address 11 --address=unix:path=/run/user/1000/at-spi/bus
+ranjith     4095  0.0  0.0 236068  6912 ?        Sl   10:00   0:00 /usr/libexec/at-spi2-registryd --use-gnome-session
+ranjith     4115  0.0  0.1 654772  9088 ?        Sl   10:00   0:00 /usr/libexec/gnome-shell-calendar-server
+ranjith     4122  0.0  0.1 1431440 15292 ?       Ssl  10:00   0:00 /usr/libexec/evolution-source-registry
+ranjith     4133  0.0  0.2 2654492 18212 ?       Sl   10:00   0:00 /usr/bin/gjs -m /usr/share/gnome-shell/org.gnome.Shell.Notifications
+ranjith     4141  0.0  0.0 383588  6100 ?        Ssl  10:00   0:00 /usr/libexec/gsd-a11y-settings
+ranjith     4145  0.0  0.2 421112 22980 ?        Ssl  10:00   0:00 /usr/libexec/gsd-color
+ranjith     4148  0.0  0.1 431736  9520 ?        Ssl  10:00   0:00 /usr/libexec/gsd-datetime
+ranjith     4154  0.0  0.0 460240  7564 ?        Ssl  10:00   0:00 /usr/libexec/gsd-housekeeping
+ranjith     4157  0.0  0.2 419968 22748 ?        Ssl  10:00   0:00 /usr/libexec/gsd-keyboard
+ranjith     4162  0.0  0.3 676076 25564 ?        Ssl  10:00   0:00 /usr/libexec/gsd-media-keys
+ranjith     4165  0.0  0.3 605464 25152 ?        Ssl  10:00   0:00 /usr/libexec/gsd-power
+ranjith     4167  0.0  0.1 323628  9908 ?        Ssl  10:00   0:00 /usr/libexec/gsd-print-notifications
+ranjith     4171  0.0  0.0 531084  6232 ?        Ssl  10:00   0:00 /usr/libexec/gsd-rfkill
+ranjith     4174  0.0  0.0 309560  6024 ?        Ssl  10:00   0:00 /usr/libexec/gsd-screensaver-proxy
+ranjith     4176  0.0  0.1 543256  9448 ?        Ssl  10:00   0:00 /usr/libexec/gsd-sharing
+ranjith     4181  0.0  0.0 459620  6900 ?        Ssl  10:00   0:00 /usr/libexec/gsd-smartcard
+ranjith     4182  0.0  0.0 393708  7988 ?        Ssl  10:00   0:00 /usr/libexec/gsd-sound
+ranjith     4187  0.0  0.2 494676 23376 ?        Ssl  10:00   0:00 /usr/libexec/gsd-wacom
+ranjith     4193  0.0  0.0 305492  6428 ?        Sl   10:00   0:00 /usr/libexec/gsd-disk-utility-notify
+ranjith     4227  0.0  0.3 732064 25296 ?        Sl   10:00   0:00 /usr/bin/anydesk --tray
+ranjith     4263  0.0  0.4 992620 35816 ?        Sl   10:00   0:00 /usr/libexec/evolution-data-server/evolution-alarm-notify
+ranjith     4325  0.0  0.1 416204 11560 ?        Sl   10:00   0:00 /usr/libexec/gsd-printer
+ranjith     4343  0.0  0.1 389524  9140 ?        Ssl  10:00   0:00 /usr/libexec/gvfs-udisks2-volume-monitor
+ranjith     4346  0.0  0.0 236648  6280 ?        Sl   10:00   0:00 /usr/libexec/ibus-memconf
+ranjith     4351  0.0  0.3 429696 28428 ?        Sl   10:00   0:04 /usr/libexec/ibus-extension-gtk3
+ranjith     4364  0.0  0.0 310428  6872 ?        Sl   10:00   0:00 /usr/libexec/ibus-portal
+ranjith     4390  0.0  0.1 546648 14488 ?        Sl   10:00   0:00 /usr/libexec/goa-daemon
+ranjith     4391  0.0  0.0 309920  6056 ?        Ssl  10:00   0:00 /usr/libexec/gvfs-mtp-volume-monitor
+ranjith     4396  0.0  0.0 310888  5968 ?        Ssl  10:00   0:00 /usr/libexec/gvfs-gphoto2-volume-monitor
+ranjith     4404  0.0  0.0 389128  7664 ?        Sl   10:00   0:00 /usr/libexec/goa-identity-service
+ranjith     4416  0.0  0.0 309772  6040 ?        Ssl  10:00   0:00 /usr/libexec/gvfs-goa-volume-monitor
+ranjith     4417  0.0  0.1 890796 10224 ?        Ssl  10:00   0:00 /usr/libexec/evolution-calendar-factory
+ranjith     4422  0.0  0.0 389376  6648 ?        Ssl  10:00   0:00 /usr/libexec/gvfs-afc-volume-monitor
+ranjith     4445  0.0  0.1 751784 12908 ?        Ssl  10:00   0:00 /usr/libexec/evolution-addressbook-factory
+ranjith     4463  0.0  0.0 236772  6900 ?        Sl   10:00   0:02 /usr/libexec/ibus-engine-simple
+ranjith     4487  0.0  0.0 230368  5792 ?        Ssl  10:00   0:00 /usr/libexec/dconf-service
+ranjith     4506  0.0  0.0 609444  7728 ?        Sl   10:00   0:00 /usr/libexec/gvfsd-trash --spawner :1.20 /org/gtk/gvfs/exec_spaw/0
+ranjith     4551  0.0  0.2 735840 20348 ?        SNsl 10:00   0:00 /usr/libexec/tracker-miner-fs-3
+ranjith     4563  0.0  0.2 2654428 16928 ?       Sl   10:00   0:00 /usr/bin/gjs -m /usr/share/gnome-shell/org.gnome.ScreenSaver
+ranjith     4573  0.0  0.3 779492 29140 ?        Ssl  10:00   0:00 /usr/libexec/gsd-xsettings
+ranjith     4576  0.0  0.1 701824 11364 ?        Ssl  10:00   0:00 /usr/libexec/xdg-desktop-portal
+ranjith     4581  0.0  1.1 1685292 94044 ?       Ssl  10:00   0:03 /usr/libexec/xdg-desktop-portal-gnome
+ranjith     4611  0.0  0.0  39128   224 ?        Ss   10:00   0:00 /snap/snapd-desktop-integration/253/usr/bin/snapd-desktop-integration
+ranjith     4623  0.0  0.2 348988 23872 ?        Sl   10:00   0:00 /usr/libexec/ibus-x11
+ranjith     4650  0.0  0.5 2955808 46676 ?       Sl   10:00   0:02 gjs /usr/share/gnome-shell/extensions/ding@rastersoft.com/app/ding.js -E -P /usr/share/gnome-shell/extensions/ding@rastersoft.com/app
+ranjith     4721  0.0  0.0 435728  7468 ?        Sl   10:00   0:00 /snap/snapd-desktop-integration/253/usr/bin/snapd-desktop-integration
+ranjith     4752  0.0  0.3 498544 25776 ?        Ssl  10:00   0:00 /usr/libexec/xdg-desktop-portal-gtk
+ranjith     4767  0.0  0.0 236304  6112 ?        Ssl  10:00   0:00 /usr/libexec/gvfsd-metadata
+ranjith     4796  0.0  0.0 1313084 5044 ?        Sl   10:01   0:00 /usr/bin/snap userd
+ranjith     5041  0.0  0.1 33789572 13924 ?      S    10:01   0:00 /snap/code/185/usr/share/code/code --type=zygote --no-zygote-sandbox --no-sandbox
+ranjith     5042  0.0  0.1 33789584 15980 ?      S    10:01   0:00 /snap/code/185/usr/share/code/code --type=zygote --no-sandbox
+ranjith     5060  0.0  0.0 33576272 2648 ?       Sl   10:01   0:00 /snap/code/185/usr/share/code/chrome_crashpad_handler --monitor-self-annotation=ptype=crashpad-handler --no-rate-limit --database=/home/ranjith/.config/Code/Crashpad --url=appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=708f8b90-4f64-4ba1-a321-3d7d9d8c5e68&iid=708f8b90-4f64-4ba1-a321-3d7d9d8c5e68&sid=708f8b90-4f64-4ba1-a321-3d7d9d8c5e68 --annotation=_companyName=Microsoft --annotation=_productName=VSCode --annotation=_version=1.98.0 --annotation=lsb-release=Ubuntu 24.04.2 LTS --annotation=plat=Linux --annotation=prod=Electron --annotation=ver=34.2.0 --initial-client-fd=42 --shared-client-connection
+ranjith     5114  0.0  0.4 33840280 32236 ?      Sl   10:01   0:05 /snap/code/185/usr/share/code/code --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --no-sandbox --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version
+ranjith     5208  0.0  0.5 1217891848 44964 ?    Sl   10:01   0:05 /snap/code/185/usr/share/code/code --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --no-sandbox --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version
+ranjith     5274  0.0  0.0   8808  3416 pts/0    Ss   10:01   0:00 /usr/bin/bash --init-file /snap/code/185/usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+ranjith     5329  0.0  0.0   8428  1628 ?        S    10:01   0:00 cat
+ranjith     5330  0.0  0.0   8428  1688 ?        S    10:01   0:00 cat
+ranjith     5332  0.0  0.0 33577296 2408 ?       Sl   10:01   0:00 /opt/google/chrome/chrome_crashpad_handler --monitor-self --monitor-self-annotation=ptype=crashpad-handler --database=/home/ranjith/.config/google-chrome/Crash Reports --metrics-dir=/home/ranjith/.config/google-chrome --url=https://clients2.google.com/cr/report --annotation=channel= --annotation=lsb-release=Ubuntu 24.04.2 LTS --annotation=plat=Linux --annotation=prod=Chrome_Linux --annotation=ver=133.0.6943.141 --initial-client-fd=5 --shared-client-connection
+ranjith     5334  0.0  0.0 33568060 2044 ?       Sl   10:01   0:00 /opt/google/chrome/chrome_crashpad_handler --no-periodic-tasks --monitor-self-annotation=ptype=crashpad-handler --database=/home/ranjith/.config/google-chrome/Crash Reports --url=https://clients2.google.com/cr/report --annotation=channel= --annotation=lsb-release=Ubuntu 24.04.2 LTS --annotation=plat=Linux --annotation=prod=Chrome_Linux --annotation=ver=133.0.6943.141 --initial-client-fd=4 --shared-client-connection
+ranjith     5340  0.0  0.3 34144608 27068 ?      S    10:01   0:00 /opt/google/chrome/chrome --type=zygote --no-zygote-sandbox --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable
+ranjith     5341  0.0  0.3 34144600 29868 ?      S    10:01   0:00 /opt/google/chrome/chrome --type=zygote --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable
+ranjith     5346  0.0  0.1 34144624 8220 ?       S    10:01   0:02 /opt/google/chrome/chrome --type=zygote --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable
+ranjith     5386  0.0  0.6 34204324 48776 ?      Sl   10:01   0:02 /opt/google/chrome/chrome --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=utility --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     5444  0.0  1.1 1216099232 91056 ?    Sl   10:01   0:06 /snap/code/185/usr/share/code/code /snap/code/185/usr/share/code/resources/app/extensions/html-language-features/server/dist/node/htmlServerMain --node-ipc --clientProcessId=5191
+ranjith     5463  0.0  0.5 1216099232 40380 ?    Sl   10:01   0:00 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/formulahendry.auto-rename-tag-0.1.10/packages/server/dist/serverMain.js --node-ipc --clientProcessId=5191
+ranjith     5490  0.0  0.4 1216099272 35080 ?    Sl   10:01   0:00 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/mtxr.sqltools-0.28.4/dist/languageserver.js --node-ipc --clientProcessId=5191
+ranjith     5491  0.0  0.4 1216099276 35828 ?    Sl   10:01   0:01 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/mongodb.mongodb-vscode-1.12.1/dist/languageServer.js --node-ipc --clientProcessId=5191
+ranjith     5498  0.0  0.0   8808  2804 pts/1    Ss+  10:01   0:00 /usr/bin/bash --init-file /snap/code/185/usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+ranjith     5573  0.0  0.2 423468 16672 ?        Sl   10:01   0:02 /home/ranjith/Art_work_automation/env/bin/python /home/ranjith/.vscode/extensions/ms-python.isort-2023.10.1/bundled/tool/lsp_server.py
+ranjith     5650  0.0  0.4 1216099232 35548 ?    Sl   10:01   0:00 /snap/code/185/usr/share/code/code /snap/code/185/usr/share/code/resources/app/extensions/json-language-features/server/dist/node/jsonServerMain --node-ipc --clientProcessId=5191
+ranjith     5773  0.0  1.4 1459785664 114964 ?   Sl   10:01   0:03 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --extension-process --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=14 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=458846275 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     5865  0.0  0.0   8808  2772 pts/2    Ss+  10:01   0:00 /usr/bin/bash --init-file /snap/code/185/usr/share/code/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+ranjith     6032  0.0  1.7 1459777476 137456 ?   Sl   10:01   0:06 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=24 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=463679378 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     6125  0.0  0.5 34217500 47396 ?      Sl   10:01   0:01 /opt/google/chrome/chrome --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US --service-sandbox-type=none --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     6167  0.0  0.4 1216099232 32692 ?    Sl   10:01   0:00 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/dbaeumer.vscode-eslint-3.0.10/server/out/eslintServer.js --node-ipc --clientProcessId=5191
+ranjith     6233  0.0  0.3 1216099232 30304 ?    Sl   10:01   0:00 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/github.vscode-github-actions-0.27.1/dist/server-node.js --node-ipc --clientProcessId=5191
+ranjith     6351  0.0  0.4 577972 34068 ?        Sl   10:01   0:00 /usr/bin/update-notifier
+ranjith     7408  0.0  0.3 1216099232 30796 ?    Sl   10:09   0:00 /snap/code/185/usr/share/code/code /snap/code/185/usr/share/code/resources/app/extensions/markdown-language-features/dist/serverWorkerMain --node-ipc --clientProcessId=5191
+ranjith     7628  0.0  0.0 320052  7600 ?        Sl   10:10   0:00 /usr/libexec/gvfsd-http --spawner :1.20 /org/gtk/gvfs/exec_spaw/1
+ranjith     7813  0.0  0.1  49688  8320 ?        S    10:11   0:00 /snap/dbeaver-ce/357/usr/share/dbeaver-ce/dbeaver
+ranjith     8506  0.0  0.0 462396  7916 ?        Sl   10:15   0:00 /usr/libexec/gvfsd-network --spawner :1.20 /org/gtk/gvfs/exec_spaw/2
+ranjith     8529  0.0  0.1 390548  8056 ?        Sl   10:15   0:00 /usr/libexec/gvfsd-dnssd --spawner :1.20 /org/gtk/gvfs/exec_spaw/4
+ranjith     8652  0.0  0.0  11264  4352 pts/3    Ss+  10:15   0:00 bash
+ranjith     8683  0.0  0.0  11264  4140 pts/4    Ss+  10:16   0:00 bash
+root         100  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/1:1H-kblockd]
+root          10  0.0  0.0      0     0 ?        I    09:53   0:02 [kworker/0:1-events]
+root        1081  0.0  0.0 313496  7028 ?        Ssl  09:54   0:00 /usr/libexec/power-profiles-daemon
+root        1086  0.0  0.0 313556  6596 ?        Ssl  09:54   0:00 /usr/libexec/accounts-daemon
+root        1087  0.0  0.0   9424  2760 ?        Ss   09:54   0:00 /usr/sbin/cron -f -P
+root        1088  0.0  0.0 309720  6304 ?        Ssl  09:54   0:00 /usr/libexec/switcheroo-control
+root        1091  0.0  0.0  18128  5924 ?        Ss   09:54   0:00 /usr/lib/systemd/systemd-logind
+root        1093  0.0  0.1 470016 10576 ?        Ssl  09:54   0:01 /usr/libexec/udisks2/udisksd
+root        1179  0.0  0.1 336304 14448 ?        Ssl  09:54   0:02 /usr/sbin/NetworkManager --no-daemon
+root        1183  0.0  0.0  17380  3984 ?        Ss   09:54   0:00 /usr/sbin/wpa_supplicant -u -s -O DIR=/run/wpa_supplicant GROUP=netdev
+root          12  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-mm_percpu_wq]
+root        1211  0.0  0.0 318356  7000 ?        Ssl  09:54   0:00 /usr/sbin/ModemManager
+root         128  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/2:1H-kblockd]
+root          13  0.0  0.0      0     0 ?        I    09:53   0:00 [rcu_tasks_kthread]
+root        1326  0.0  0.1 118016 10024 ?        Ssl  09:54   0:00 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+root        1333  0.0  0.1 1874928 10868 ?       Ssl  09:54   0:01 /usr/bin/containerd
+root        1336  0.0  0.1 433256 12492 ?        Ssl  09:54   0:01 /usr/bin/anydesk --service
+root        1383  0.0  0.0  12020  5944 ?        Ss   09:54   0:00 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+root          14  0.0  0.0      0     0 ?        I    09:53   0:00 [rcu_tasks_rude_kthread]
+root        1401  0.0  0.0 314816  7388 ?        Ssl  09:54   0:00 /usr/sbin/gdm3
+root        1499  0.0  0.0  16896  2928 ?        Ss   09:54   0:00 /usr/sbin/apache2 -k start
+root          15  0.0  0.0      0     0 ?        I    09:53   0:00 [rcu_tasks_trace_kthread]
+root       15956  0.0  0.4 1992460 34604 ?       Ssl  10:44   0:01 /usr/lib/snapd/snapd
+root          16  0.0  0.0      0     0 ?        S    09:53   0:00 [ksoftirqd/0]
+root         169  0.0  0.0      0     0 ?        S    09:53   0:00 [scsi_eh_0]
+root         170  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-scsi_tmf_0]
+root          17  0.0  0.0      0     0 ?        I    09:53   0:06 [rcu_preempt]
+root         171  0.0  0.0      0     0 ?        S    09:53   0:00 [scsi_eh_1]
+root         172  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-scsi_tmf_1]
+root         173  0.0  0.0      0     0 ?        S    09:53   0:00 [scsi_eh_2]
+root         174  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-scsi_tmf_2]
+root          18  0.0  0.0      0     0 ?        S    09:53   0:00 [rcu_exp_par_gp_kthread_worker/0]
+root       18458  0.0  0.1 424872  9964 ?        Ssl  10:46   0:00 /usr/sbin/thermald --systemd --dbus-enable --adaptive
+root       18463  0.0  0.0      0     0 ?        I    10:46   0:01 [kworker/2:3-events]
+root         188  0.0  0.0      0     0 ?        S    09:53   0:00 [scsi_eh_3]
+root         189  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-scsi_tmf_3]
+root         190  0.0  0.0      0     0 ?        S    09:53   0:00 [scsi_eh_4]
+root          19  0.0  0.0      0     0 ?        S    09:53   0:00 [rcu_exp_gp_kthread_worker]
+root        1903  0.0  0.1  38200  9156 ?        Ss   09:54   0:00 /usr/sbin/cupsd -l
+root         191  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-scsi_tmf_4]
+root       19304  0.0  0.0      0     0 ?        S    10:46   0:00 [psimon]
+root       19314  0.0  0.0      0     0 ?        I    10:46   0:01 [kworker/1:2-events]
+root          20  0.0  0.0      0     0 ?        S    09:53   0:00 [migration/0]
+root           2  0.0  0.0      0     0 ?        S    09:53   0:00 [kthreadd]
+root          21  0.0  0.0      0     0 ?        S    09:53   0:00 [idle_inject/0]
+root        2105  0.0  0.4  47504 37888 ?        Ss   09:54   0:01 /usr/bin/perl /usr/share/webmin/miniserv.pl --nofork /etc/webmin/miniserv.conf
+root          22  0.0  0.0      0     0 ?        S    09:53   0:00 [cpuhp/0]
+root          23  0.0  0.0      0     0 ?        S    09:53   0:00 [cpuhp/1]
+root          24  0.0  0.0      0     0 ?        S    09:53   0:00 [idle_inject/1]
+root         248  0.0  0.0      0     0 ?        S    09:53   0:01 [jbd2/sda2-8]
+root         249  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-ext4-rsv-conversion]
+root          25  0.0  0.0      0     0 ?        S    09:53   0:00 [migration/1]
+root       25510  0.0  0.5 479420 40472 ?        Ssl  11:04   0:01 /usr/libexec/fwupd/fwupd
+root       25985  0.0  0.0      0     0 ?        I    11:10   0:02 [kworker/3:2-events]
+root          26  0.0  0.0      0     0 ?        S    09:53   0:00 [ksoftirqd/1]
+root       26713  0.0  0.0      0     0 ?        I    11:16   0:00 [kworker/u16:2-events_unbound]
+root          28  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/1:0H-events_highpri]
+root       28728  0.0  0.0      0     0 ?        I    11:36   0:00 [kworker/u16:0-events_power_efficient]
+root          29  0.0  0.0      0     0 ?        S    09:53   0:00 [cpuhp/2]
+root       29359  0.0  0.0      0     0 ?        I    11:42   0:00 [kworker/u16:3-events_power_efficient]
+root       29694  0.0  0.0      0     0 ?        I<   11:46   0:00 [kworker/u17:2-i915_flip]
+root       29801  0.0  0.0      0     0 ?        I    11:47   0:00 [kworker/2:1-events]
+root       29922  0.0  0.0      0     0 ?        I    11:49   0:00 [kworker/u16:1-events_power_efficient]
+root          30  0.0  0.0      0     0 ?        S    09:53   0:00 [idle_inject/2]
+root           3  0.0  0.0      0     0 ?        S    09:53   0:00 [pool_workqueue_release]
+root         300  0.0  0.1  59740 14136 ?        S<s  09:53   0:00 /usr/lib/systemd/systemd-journald
+root       30010  0.0  0.0      0     0 ?        I    11:50   0:00 [kworker/3:1]
+root       30293  0.0  0.0      0     0 ?        I<   11:52   0:00 [kworker/u17:0-i915_flip]
+root       30342  0.0  0.0      0     0 ?        I    11:53   0:00 [kworker/0:0-cgroup_destroy]
+root          31  0.0  0.0      0     0 ?        S    09:53   0:00 [migration/2]
+root       31244  0.0  0.0      0     0 ?        I    12:00   0:00 [kworker/0:2]
+root       31245  0.0  0.0      0     0 ?        I    12:00   0:00 [kworker/0:3-events]
+root       31382  0.0  0.0      0     0 ?        I    12:00   0:00 [kworker/3:0-i915-unordered]
+root          32  0.0  0.0      0     0 ?        S    09:53   0:00 [ksoftirqd/2]
+root        3234  0.0  0.0 317276  7520 ?        Ssl  09:54   0:00 /usr/libexec/upowerd
+root          34  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/2:0H-events_highpri]
+root          35  0.0  0.0      0     0 ?        S    09:53   0:00 [cpuhp/3]
+root          36  0.0  0.0      0     0 ?        S    09:53   0:00 [idle_inject/3]
+root          37  0.0  0.0      0     0 ?        S    09:53   0:00 [migration/3]
+root        3716  0.0  0.0 242580  7268 ?        Sl   10:00   0:00 gdm-session-worker [pam/gdm-password]
+root          38  0.0  0.0      0     0 ?        S    09:53   0:00 [ksoftirqd/3]
+root        3813  0.0  0.0   2704  1876 ?        Ss   10:00   0:00 fusermount3 -o rw,nosuid,nodev,fsname=portal,auto_unmount,subtype=portal -- /run/user/1000/doc
+root          40  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/3:0H-events_highpri]
+root           4  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-rcu_gp]
+root         401  0.0  0.0  30692  7596 ?        Ss   09:53   0:00 /usr/lib/systemd/systemd-udevd
+root          41  0.0  0.0      0     0 ?        S    09:53   0:00 [kdevtmpfs]
+root          42  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-inet_frag_wq]
+root          44  0.0  0.0      0     0 ?        S    09:53   0:00 [kauditd]
+root         446  0.0  0.0      0     0 ?        S    09:53   0:00 [psimon]
+root          45  0.0  0.0      0     0 ?        S    09:53   0:00 [khungtaskd]
+root          46  0.0  0.0      0     0 ?        S    09:53   0:00 [oom_reaper]
+root          48  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-writeback]
+root          50  0.0  0.0      0     0 ?        SN   09:53   0:00 [ksmd]
+root           5  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-sync_wq]
+root          51  0.0  0.0      0     0 ?        SN   09:53   0:00 [khugepaged]
+root          52  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-kintegrityd]
+root          53  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-kblockd]
+root         538  0.0  0.0      0     0 ?        S    09:53   0:00 [irq/29-mei_me]
+root          54  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-blkcg_punt_bio]
+root         542  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-cryptd]
+root          55  0.0  0.0      0     0 ?        S    09:53   0:00 [irq/9-acpi]
+root          58  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-tpm_dev_wq]
+root          59  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-ata_sff]
+root          60  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-md]
+root           6  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-slub_flushwq]
+root          61  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-md_bitmap]
+root         614  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-ttm]
+root         616  0.0  0.0      0     0 ?        S    09:53   0:00 [card1-crtc0]
+root         617  0.0  0.0      0     0 ?        S    09:53   0:00 [card1-crtc1]
+root          62  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-edac-poller]
+root          63  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-devfreq_wq]
+root          64  0.0  0.0      0     0 ?        S    09:53   0:00 [watchdogd]
+root          65  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/3:1H-events_highpri]
+root          67  0.0  0.0      0     0 ?        S    09:53   0:00 [ecryptfs-kthread]
+root          68  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-kthrotld]
+root          69  0.0  0.0      0     0 ?        S    09:53   0:00 [irq/24-pciehp]
+root          70  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-acpi_thermal_pm]
+root           7  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-netns]
+root          73  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-mld]
+root          74  0.0  0.0      0     0 ?        I<   09:53   0:01 [kworker/0:1H-kblockd]
+root          75  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-ipv6_addrconf]
+root          77  0.0  0.0      0     0 ?        I    09:53   0:01 [kworker/1:1-cgroup_destroy]
+root          83  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-kstrp]
+root           9  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/0:0H-events_highpri]
+root          99  0.0  0.0      0     0 ?        I<   09:53   0:00 [kworker/R-charger_manager]
+rtkit       1711  0.0  0.0  22940  3088 ?        SNsl 09:54   0:00 /usr/libexec/rtkit-daemon
+syslog     19376  0.0  0.0 222564  4800 ?        Ssl  10:46   0:00 /usr/sbin/rsyslogd -n -iNONE
+systemd+     884  0.0  0.0  17556  5068 ?        Ss   09:53   0:03 /usr/lib/systemd/systemd-oomd
+systemd+     898  0.0  0.1  22316  9148 ?        Ss   09:53   0:01 /usr/lib/systemd/systemd-resolved
+systemd+     901  0.0  0.0  91044  5464 ?        Ssl  09:53   0:00 /usr/lib/systemd/systemd-timesyncd
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+www-data    1842  0.0  0.0 1946428 3032 ?        Sl   09:54   0:00 /usr/sbin/apache2 -k start
+www-data    1843  0.0  0.0 2011964 3004 ?        Sl   09:54   0:00 /usr/sbin/apache2 -k start
+ranjith    25312  0.1  1.7 1461489604 142584 ?   Sl   11:01   0:06 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=491 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=4078390977 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     4139  0.1  0.1 462836 11724 ?        Ssl  10:00   0:14 /usr/bin/ibus-daemon --panel disable
+ranjith     4718  0.1  0.5 1032312 46240 ?       Sl   10:00   0:13 /usr/libexec/mutter-x11-frames
+ranjith     5458  0.1  1.2 1216132020 100804 ?   Sl   10:01   0:11 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/ms-edgedevtools.vscode-edge-devtools-2.1.8/node_modules/vscode-webhint/dist/src/server.js /home/ranjith/.config/Code/User/globalStorage/ms-edgedevtools.vscode-edge-devtools Microsoft Edge Tools --node-ipc --clientProcessId=5191
+root           1  0.1  0.1  23924 12592 ?        Ss   09:53   0:09 /sbin/init splash
+root        1507  0.1  0.0 1082592 4924 ?        Sl   09:54   0:11 /opt/teamviewer/tv_bin/teamviewerd -d
+root       31199  0.1  0.0      0     0 ?        D<   11:59   0:00 [kworker/u17:1+i915_flip]
+root          49  0.1  0.0      0     0 ?        S    09:53   0:13 [kcompactd0]
+root          66  0.1  0.0      0     0 ?        S    09:53   0:15 [kswapd0]
+ranjith    27161  0.2  1.9 1459784244 159428 ?   Sl   11:19   0:07 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=600 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=5141173202 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     5677  0.2  3.1 1459854872 251320 ?   Sl   10:01   0:21 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=7 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=458315552 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    17323  0.3  1.8 1217881208 151008 ?   Sl   10:45   0:16 /snap/code/185/usr/share/code/code --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --no-sandbox --dns-result-order=ipv4first --inspect-port=0 --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version
+ranjith    31868  0.3  1.0 1461472752 83260 ?    Sl   12:04   0:00 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --extension-process --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=863 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=7852544377 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     5258  0.3  0.6 1217902964 54256 ?    Sl   10:01   0:27 /snap/code/185/usr/share/code/code --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --no-sandbox --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version
+ranjith     8815  0.3  2.0 1459811836 166568 ?   Sl   10:17   0:20 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=150 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=1410369164 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ollama      1461  0.4  0.1 3239008 9384 ?        Ssl  09:54   0:31 /usr/local/bin/ollama serve
+rabbitmq   17812  0.4  1.3 2675736 107680 ?      Ssl  10:46   0:20 /usr/lib/erlang/erts-15.2.3/bin/beam.smp -W w -MBas ageffcbf -MHas ageffcbf -MBlmbcs 512 -MHlmbcs 512 -MMmcs 30 -pc unicode -P 1048576 -t 5000000 -stbt db -zdbbl 128000 -sbwt none -sbwtdcpu none -sbwtdio none -- -root /usr/lib/erlang -bindir /usr/lib/erlang/erts-15.2.3/bin -progname erl -- -home /var/lib/rabbitmq -- -pa  -noshell -noinput -s rabbit boot -boot start_sasl -syslog logger [] -syslog syslog_error_logger false -kernel prevent_overlapping_partitions false --
+ranjith     6384  0.4  1.1 2710140 90748 ?       Sl   10:01   0:30 /snap/snap-store/1248/bin/snap-store
+ranjith     8645  0.4  0.7 719180 63064 ?        Ssl  10:15   0:30 /usr/libexec/gnome-terminal-server
+ranjith    30801  0.5  1.6 1461492288 134848 ?   Sl   11:56   0:02 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --extension-process --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=811 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=7374136417 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    25324  0.6  2.1 1459777768 171040 ?   Sl   11:01   0:24 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=492 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=4079740984 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    30559  0.7  2.5 1461492328 203024 ?   Sl   11:55   0:04 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --extension-process --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=800 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=7300202119 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     5377  0.7  1.2 34151232 103056 ?     Sl   10:01   0:51 /opt/google/chrome/chrome --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    10104  0.8  4.1 1463282788 333416 ?   Sl   10:24   0:51 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=205 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=1819577579 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+mongodb     1460  0.9  0.4 3701868 34984 ?       Ssl  09:54   1:16 /usr/bin/mongod --config /etc/mongod.conf
+mysql       1600  0.9  0.4 2807136 32184 ?       Ssl  09:54   1:10 /usr/sbin/mysqld
+ranjith     5039  0.9  2.2 1218193704 181508 ?   SLsl 10:01   1:08 /snap/code/185/usr/share/code/code --no-sandbox --force-user-env
+ranjith     6315  0.9  4.6 1464977140 376804 ?   Sl   10:01   1:13 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=40 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=486517755 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    24583  1.1  3.0 1461545992 244424 ?   Sl   10:55   0:46 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=433 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=3684664666 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith    15943  1.2  4.5 1217954240 368564 ?   Sl   10:44   1:01 /snap/code/185/usr/share/code/code --type=renderer --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --app-path=/snap/code/185/usr/share/code/resources/app --enable-sandbox --enable-blink-features=HighlightAPI --no-sandbox --disable-gpu-compositing --disable-blink-features=FontMatchingCTMigration,StandardizedBrowserZoom, --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=11 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=3070954454 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version --vscode-window-config=vscode:27dd756b-b381-484e-bd58-7fa31c4841f1
+ranjith     5207  1.3  1.0 1217875072 87692 ?    Sl   10:01   1:36 /snap/code/185/usr/share/code/code --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --no-sandbox --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version
+ranjith     4432  1.5  0.8 499872 67640 ?        Sl   10:00   1:52 /usr/bin/Xwayland :0 -rootless -noreset -accessx -core -auth /run/user/1000/.mutter-Xwaylandauth.RJDU32 -listenfd 4 -listenfd 5 -displayfd 6 -initfd 7 -byteswappedclients
+ranjith     6073  1.6  1.8 1461508672 146168 ?   Sl   10:01   2:02 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --extension-process --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=27 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=466476203 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     5191  1.9  5.8 1226432828 472876 ?   Sl   10:01   2:28 /snap/code/185/usr/share/code/code --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --no-sandbox --dns-result-order=ipv4first --inspect-port=0 --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version
+ranjith     5372  2.2  1.5 34384724 122020 ?     Sl   10:01   2:48 /opt/google/chrome/chrome --type=gpu-process --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --gpu-preferences=UAAAAAAAAAAgAAAEAAAAAAAAAAAAAAAAAABgAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAABAAAAAAAAAAEAAAAAAAAAAIAAAAAAAAAAgAAAAAAAAA --shared-files --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     5659  2.2  4.6 1219549992 377268 ?   Sl   10:01   2:49 /snap/code/185/usr/share/code/code /home/ranjith/.vscode/extensions/ms-python.vscode-pylance-2025.3.1/dist/server.bundle.js --cancellationReceive=file:656008d78aec58668db1ac7ec3bdfcd09ac5883e89 --node-ipc --clientProcessId=5191
+ranjith     5153  2.6  2.1 34043252 176588 ?     Sl   10:01   3:17 /snap/code/185/usr/share/code/code --type=gpu-process --disable-gpu-sandbox --no-sandbox --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --gpu-preferences=UAAAAAAAAAAgAAAEAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAABAAAAAAAAAAEAAAAAAAAAAIAAAAAAAAAAgAAAAAAAAA --use-gl=angle --use-angle=swiftshader-webgl --shared-files --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version
+ranjith     6256  2.9  6.3 1463294904 512164 ?   Sl   10:01   3:36 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=33 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=484742093 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     4003  3.7  1.6 4587732 134420 ?      Rsl  10:00   4:36 /usr/bin/gnome-shell
+ranjith     7928  3.8  4.9 4928496 399100 ?      Sl   10:11   4:19 /snap/dbeaver-ce/357/usr/share/dbeaver-ce/jre/bin/java -XX:+IgnoreUnrecognizedVMOptions -Dosgi.requiredJavaVersion=17 -Dfile.encoding=UTF-8 --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.base/java.time=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/jdk.internal.vm=ALL-UNNAMED --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.fs=ALL-UNNAMED --add-opens=java.base/sun.security.ssl=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.jgss=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED --add-opens=java.desktop/java.awt=ALL-UNNAMED --add-opens=java.desktop/java.awt.peer=ALL-UNNAMED --add-opens=java.sql/java.sql=ALL-UNNAMED -Xms64m -Xmx1024m -Ddbeaver.distribution.type=deb -jar /snap/dbeaver-ce/357/usr/share/dbeaver-ce//plugins/org.jkiss.dbeaver.launcher_1.0.24.202503021833.jar -os linux -ws gtk -arch x86_64 -showsplash -launcher /snap/dbeaver-ce/357/usr/share/dbeaver-ce/dbeaver -name Dbeaver --launcher.library /snap/dbeaver-ce/357/usr/share/dbeaver-ce//plugins/org.eclipse.equinox.launcher.gtk.linux.x86_64_1.2.1200.v20240924-2302/eclipse_11905.so -startup /snap/dbeaver-ce/357/usr/share/dbeaver-ce//plugins/org.jkiss.dbeaver.launcher_1.0.24.202503021833.jar --launcher.overrideVmargs -exitdata 21 -vm /snap/dbeaver-ce/357/usr/share/dbeaver-ce/jre/bin/java -vmargs -XX:+IgnoreUnrecognizedVMOptions -Dosgi.requiredJavaVersion=17 -Dfile.encoding=UTF-8 --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.base/java.time=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/jdk.internal.vm=ALL-UNNAMED --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.fs=ALL-UNNAMED --add-opens=java.base/sun.security.ssl=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.jgss=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED --add-opens=java.desktop/java.awt=ALL-UNNAMED --add-opens=java.desktop/java.awt.peer=ALL-UNNAMED --add-opens=java.sql/java.sql=ALL-UNNAMED -Xms64m -Xmx1024m -Ddbeaver.distribution.type=deb -jar /snap/dbeaver-ce/357/usr/share/dbeaver-ce//plugins/org.jkiss.dbeaver.launcher_1.0.24.202503021833.jar
+ranjith    25290  6.4  4.7 1459814860 380836 ?   Sl   11:01   4:05 /opt/google/chrome/chrome --type=renderer --string-annotations --crashpad-handler-pid=5332 --enable-crash-reporter=61687974-056a-453c-b1a0-6920a7abe41c, --change-stack-guard-on-fork=enable --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=489 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=4074768720 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,3162377495358997689,10494327754076821407,262144 --disable-features=EyeDropper --variations-seed-version=20250312-184628.452000
+ranjith     5142  8.1  5.6 1221354660 457528 ?   Sl   10:01  10:07 /snap/code/185/usr/share/code/code --type=renderer --crashpad-handler-pid=5060 --enable-crash-reporter=e7d45fe8-093f-42a4-846e-a3870c2bf136,no_channel --user-data-dir=/home/ranjith/.config/Code --standard-schemes=vscode-webview,vscode-file --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --app-path=/snap/code/185/usr/share/code/resources/app --enable-sandbox --enable-blink-features=HighlightAPI --no-sandbox --disable-blink-features=FontMatchingCTMigration,StandardizedBrowserZoom, --lang=en-US --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=5 --time-ticks-at-unix-epoch=-1741926224317583 --launch-time-ticks=446757511 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=3,i,14986228040871826457,7189430779400136988,262144 --disable-features=CalculateNativeWinOcclusion,PlzDedicatedWorker,SpareRendererForSitePerProcess --variations-seed-version --vscode-window-config=vscode:f72a8ddf-0add-4d2b-8b71-8ca0cadb1aea
+ranjith     5322  8.6  4.2 34561736 339552 ?     SLl  10:01  10:40 /opt/google/chrome/chrome
+ranjith    31039 59.7  0.5 201880 40236 pts/0    Sl+  11:58   3:57 /home/ranjith/Art_work_automation/env/bin/python3 app.py

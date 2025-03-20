@@ -5,7 +5,7 @@ def run(playwright: Playwright) -> None:
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
-    page.goto("http://172.16.17.21:8000/login")
+    page.goto("https://192.168.35.237:8000/login")
     page.get_by_role("button", name="Log in").click()
     page.get_by_role("link", name="Order Uploader").click()
     page.get_by_role("textbox", name="ZIP File").click()

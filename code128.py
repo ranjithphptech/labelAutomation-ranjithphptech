@@ -79,7 +79,7 @@ class BarcodeGenerator:
         #Close tags and return the SVG string
         svgParts.append("\t"+ '</g>')
         svgParts.append('</svg>')
-        print("\n".join(svgParts))
+        # print("\n".join(svgParts))
         #Return the complete SVG as a single string
         return "\n".join(svgParts)
         

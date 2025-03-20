@@ -3,6 +3,7 @@ from flask import Flask, session, render_template, request, redirect, url_for, f
 from flask_mysqldb import MySQL
 from math import ceil   
 import configparser
+from manage_services import ServiceManager
 
 app = Flask(__name__)
 app.config.update(
@@ -11,6 +12,8 @@ app.config.update(
 
 config = configparser.ConfigParser()
 config.read('config.ini')
+
+project_path = os.path.dirname(os.path.abspath(__file__))
 
 app.config['MYSQL_HOST'] = config['database']['host']
 app.config['MYSQL_USER'] = config['database']['user']
@@ -86,7 +89,9 @@ def Orderlist():
     orders = cursor.fetchall()
     cursor.close()
     for order in orders:
-        if order['approval_mail_status']=='F':
+        if order['status']=='F':
+            order['status'] = "Failed"
+        elif order['approval_mail_status']=='F':
             if order['status']=='CAP':
                order['status'] = "Failed"
         elif order['approval_mail_status']=='S':
@@ -171,6 +176,8 @@ def saveTag():
     if request.method == 'POST':
         design_code = request.form.get('design_code', None).replace("  ", " ").upper()
         product_code = request.form.get('product_code', None).replace("  ", " ").upper()
+        ean13_barcode_width = request.form.get('ean13_barcode_width', 0.00)
+        code128_barcode_width = request.form.get('code128_barcode_width', 0.00)
 
         # Define the directory to save SVG files
         svgDir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static', 'svg'))
@@ -201,20 +208,145 @@ def saveTag():
         data = cursor.fetchone()
         
         if data is None:
-            cursor.execute("INSERT INTO label_list (design_code,label_name, product_code, dynamic) VALUES (%s,%s,%s,%s)", (design_code, labelName, product_code, dynamic))
+            cursor.execute("INSERT INTO label_list (design_code,label_name, product_code,ean13_barcode_width,code128_barcode_width,dynamic) VALUES (%s,%s,%s,%s,%s,%s)", (design_code, labelName, product_code,ean13_barcode_width,code128_barcode_width, dynamic))
         else:
-            cursor.execute("UPDATE label_list SET design_code=%s,label_name=%s,product_code=%s,dynamic=%s WHERE id=%s", (design_code, labelName, product_code, dynamic, data['id']))
+            cursor.execute("UPDATE label_list SET design_code=%s,label_name=%s,product_code=%s,ean13_barcode_width=%s,code128_barcode_width=%s,dynamic=%s WHERE id=%s", (design_code, labelName, product_code, ean13_barcode_width, code128_barcode_width, dynamic, data['id']))
 
         mysql.connection.commit()       
         cursor.close()
         
         flash("The label has been saved successfully!")
         return redirect("/TagUpload")  
+    
+@app.route('/Test', methods=['GET'])
+def Test():
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM test_mode")
+    test_mode_data = cursor.fetchone()
+    cursor.close()
+    
+    return render_template("test.html", test_mode_data=test_mode_data)
 
+@app.route('/saveTest', methods=['POST'])
+def saveTest():
+    test_mode = request.form.get('test_mode', 0)
+    to_emailids = request.form.get('to_emailids', "")
+    cc_emailids = request.form.get('cc_emailids', "")
+    
+    cursor = mysql.connection.cursor()
+    
+    # Truncate the test_mode table
+    cursor.execute("TRUNCATE TABLE test_mode")
+    
+    # Insert new values into the test_mode table
+    cursor.execute("INSERT INTO test_mode (test_mode, to_emailids, cc_emailids) VALUES (%s, %s, %s)", (test_mode, to_emailids, cc_emailids))
+    
+    mysql.connection.commit()
+    cursor.close()
+    
+    return redirect("/Test")
+    
 @app.route('/logout', methods=['GET'])
 def logout():
     session.clear()
     return redirect("/login")
 
 if __name__ == "__main__":
+#     try:
+#         service_manager = ServiceManager()
+#         status, msg = service_manager.check_service_exists('labelAutomationArtworkApprovalSender')
+#         print(status,msg)
+#         if status:
+#             print(msg)
+#             status,msg=service_manager.check_enabled('labelAutomationArtworkApprovalSender')
+#             if status:
+#                 print(msg)
+#                 status,msg=service_manager.check_running('labelAutomationArtworkApprovalSender')
+#                 if status:
+#                     print(msg)
+#                     status,msg=service_manager.restart_service('labelAutomationArtworkApprovalSender')
+#                 else:
+#                     status,msg=service_manager.start_service('labelAutomationArtworkApprovalSender')
+#                     if status:
+#                         print(msg)
+#                     else:
+#                         print(msg)
+#                         raise Exception(msg)
+#             else:
+#                 print(msg)               
+#                 raise Exception(msg)
+#         else:
+#             print('labelAutomationArtworkApprovalSender Service not found creating....')
+#             service_content = r"""
+# [Unit]
+# Description=send service
+# After=network.target
+
+# [Service]
+# User=ranjith
+# WorkingDirectory="""+project_path+r"""
+# ExecStart="""+project_path+r"""/env/bin/python3 """+project_path+r"""/send.py
+# Restart=always
+
+# [Install]
+# WantedBy=multi-user.target
+# """
+#             status,msg = service_manager.create_service('labelAutomationArtworkApprovalSender',service_content)
+#             if status:
+#                 print(msg)
+#             else:
+#                 print(msg)
+#                 print('ssdsd')
+#                 raise Exception(msg)
+            
+#         status, msg = service_manager.check_service_exists('labelAutomationArtworkApprovalReceiver')
+#         if status:
+#             print(msg)
+#             status,msg=service_manager.check_enabled('labelAutomationArtworkApprovalReceiver')
+#             if status:
+#                 print(msg)
+#                 status,msg=service_manager.check_running('labelAutomationArtworkApprovalReceiver')
+#                 if status:
+#                     print(msg)
+#                     status,msg=service_manager.restart_service('labelAutomationArtworkApprovalReceiver')
+#                     if status:
+#                         print(msg)
+#                     else:
+#                         print(msg)
+#                         raise Exception(msg)
+#                 else:
+#                     status,msg=service_manager.start_service('labelAutomationArtworkApprovalReceiver')
+#                     if status:
+#                         print(msg)
+#                     else:
+#                         print(msg)
+#                         raise Exception(msg)
+#             else:
+#                 print(msg)               
+#                 raise Exception(msg)
+#         else:
+#             service_content = r"""
+# [Unit]
+# Description=send service
+# After=network.target
+
+# [Service]
+# User=ranjith
+# WorkingDirectory="""+project_path+r"""
+# ExecStart="""+project_path+r"""/env/bin/python3 """+project_path+r"""/receive.py
+# Restart=always
+
+# [Install]
+# WantedBy=multi-user.target
+# """
+#             status,msg = service_manager.create_service('labelAutomationArtworkApprovalReceiver',service_content)
+#             if status:
+#                 print(msg)
+#             else:
+#                 print(msg)
+#                 raise Exception(msg)
+           
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+    
     app.run(debug=True,host='0.0.0.0', port=8000,ssl_context=('cert.pem', 'key.pem'))

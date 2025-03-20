@@ -7,6 +7,12 @@
 </style>
 <div class="page-contents form-box justify-content-center align-items-center mt-5">
   <form class=" " action="/saveTag" method="post" enctype="multipart/form-data">
+    <div class="col-md-12 mb-3">
+      <input class="form-check-input dynamic_label" type="checkbox" value="1" name="dynamic_label" id="dynamic_label">
+      <label class="form-check-label" for="dynamic_label">
+        Dynamic label
+      </label>
+    </div>
     <div class="row g-3">
       <div class="col-md-12">
         <label for="design_code" class="form-label mb-1">Design Code</label>
@@ -20,18 +26,21 @@
         <label for="front_side" class="form-label mb-1">Front Side</label>
         <input class="form-control form-control-sm" name="svgFile_frontside" type="file" accept=".svg" id="front_side">
       </div>
-
       <div class="col-md-12 back_side_img mt-3">
         <label for="back_side" class="form-label mb-1">Back Side</label>
         <input type="file" class="form-control form-control-sm" name="svgFile_backside" id="back_side" accept=".svg" />
       </div>
     </div>
-    <div class="col-md-12 mt-3">
-      <input class="form-check-input dynamic_label" type="checkbox" value="1" name="dynamic_label" id="dynamic_label">
-      <label class="form-check-label" for="dynamic_label">
-        Dynamic label
-      </label>
+    <div class="col-md-12 back_side_img mt-3">
+      <label for="ean13_barcode_width" class="form-label mb-1">EAN13 Barcode Width</label>
+      <input type="text" class="form-control form-control-sm" name="ean13_barcode_width" id="ean13_barcode_width" accept=".svg" />
     </div>
+    <div class="col-md-12 back_side_img mt-3">
+      <label for="code128_barcode_width" class="form-label mb-1">Code128 Barcode Width</label>
+      <input type="text" class="form-control form-control-sm" name="code128_barcode_width" id="code128_barcode_width" accept=".svg" />
+    </div>
+  </div>
+ 
     <div class="col-md-12 mt-4">
       <center> <button type="submit" class="btn btn-sm btn-primary">Submit</button></center>
     </div>

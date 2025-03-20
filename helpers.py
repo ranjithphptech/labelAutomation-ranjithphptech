@@ -1,21 +1,35 @@
 import os
 import shutil
-import psutil
 from pathlib import Path
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 import configparser
-
+from db import conn
 config = configparser.ConfigParser()
 config.read('config.ini')
 
 def send_mail(subject='',toMailid=None,attachmentPath=None):
     try:
         sender_email = config['mail']['username']
-        recipient_email = toMailid
-        recipient_email = 'ranjith@indsysholdings.com'
+        toMailid = 'ranjith@indsysholdings.com'
+        
+        cursor = conn.cursor()
+        # Check if test_mode is enabled
+        cursor.execute("SELECT test_mode, to_emailids, cc_emailids FROM test_mode WHERE id=1")
+        test_mode_data = cursor.fetchone()
+        cc_emails = []
+        if test_mode_data and test_mode_data[0] == 1:
+            to_emails = test_mode_data[1].split(',')
+            cc_emails = test_mode_data[2].split(',')
+        else:
+            to_emails = [toMailid]
+            
+        conn.close()
+        
+        all_recipients = to_emails + cc_emails
+        
         subject = subject
         message = """<p>Hi </p>
 
@@ -31,9 +45,11 @@ def send_mail(subject='',toMailid=None,attachmentPath=None):
 
         msg = MIMEMultipart()
         msg['From'] = sender_email
-        msg['To'] = recipient_email
+        msg['To'] = ', '.join(to_emails)
         msg['Subject'] = subject
-
+        if cc_emails:
+            msg['Cc'] = ', '.join(cc_emails)
+        
         for pdf_file_path in Path(attachmentPath).rglob('*.pdf'):
             with open(pdf_file_path, "rb") as attachment:
                 pdfFilename =  os.path.basename(pdf_file_path).split('/')[-1]
@@ -54,12 +70,15 @@ def send_mail(subject='',toMailid=None,attachmentPath=None):
         email_password = config['mail']['password']
         server.login(sender_email, email_password)
         print('Mail is sending...')
-        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.sendmail(sender_email, all_recipients, msg.as_string())
         print('sent successfully...')
         server.quit()
-        return {"status":"success","msg":"customer approval mail send successfully"}
+        print({"status": "success", "msg": "customer approval mail send successfully"})
+        return {"status": "success", "msg": "customer approval mail send successfully"}
     except Exception as e:
-         return {"status":"failed","msg":"Mail sending failed : "+str(format(e)).replace("'",'"').strip()}
+        error_message = {"status": "failed", "msg": "Mail sending failed : " + str(format(e)).replace("'", '"').strip()}
+        print(error_message)
+        return error_message
      
 
 def delete_folder_contents_only(folder_path):
